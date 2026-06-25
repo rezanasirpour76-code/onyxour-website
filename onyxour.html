@@ -4,8 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Onyxour VPN — اینترنت آزاد، امن و پرسرعت</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&family=Space+Grotesk:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap');
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -28,15 +30,34 @@
       --radius:   12px;
     }
 
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; background: var(--bg); }
 
     body {
-      background: var(--bg);
+      background: transparent;
       color: var(--text);
       font-family: 'Vazirmatn', 'Tahoma', system-ui, sans-serif;
       line-height: 1.75;
       direction: rtl;
       overflow-x: hidden;
+    }
+
+    /* Playfair Display for the wordmark logo */
+    .logo {
+      font-family: 'Playfair Display', Georgia, serif !important;
+    }
+
+    /* Space Grotesk for Latin / numeric content */
+    .hero-sub-en, .sec-tag-en, .feat-card .en,
+    .stat-lbl-en, .stat-num, .contact-card-value,
+    .trial-section .sub-en, .cta-banner .sub-en,
+    .pc-vol, .pc-amount {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+    }
+
+    /* Vazirmatn Bold for all Persian headlines */
+    .hero h1, .sec-title, h2, h3 {
+      font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+      font-weight: 800;
     }
 
     /* ── SCROLLBAR ── */
@@ -60,15 +81,23 @@
       justify-content: space-between;
       padding: 0 6%;
       height: 64px;
-      background: rgba(10, 10, 10, 0.88);
-      backdrop-filter: blur(14px);
+      background: rgba(10, 10, 10, 0.72);
+      backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
+      transition: background 0.35s ease, backdrop-filter 0.35s ease,
+                  border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+    nav.scrolled {
+      background: rgba(6, 6, 6, 0.97);
+      backdrop-filter: blur(28px);
+      border-bottom-color: rgba(255, 107, 0, 0.18);
+      box-shadow: 0 2px 28px rgba(0, 0, 0, 0.55);
     }
 
     .logo {
-      font-size: 1.5rem;
+      font-size: 1.55rem;
       font-weight: 900;
-      letter-spacing: -0.5px;
+      letter-spacing: 0.03em;
       color: var(--text);
       direction: ltr;
       display: flex;
@@ -117,20 +146,21 @@
     ════════════════════════════════ */
     .hero {
       position: relative;
+      z-index: 1;
       text-align: center;
       padding: 7rem 6% 6rem;
       overflow: hidden;
-      background: var(--bg);
+      background: transparent;
     }
 
-    /* subtle dark overlay on hero */
+    /* dark center overlay — lifts text contrast over canvas + shield */
     .hero::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse at center, rgba(255,107,0,0.05) 0%, transparent 68%);
+      background: radial-gradient(ellipse 68% 58% at 50% 52%, rgba(10,10,10,0.62) 0%, rgba(10,10,10,0.22) 55%, transparent 80%);
       pointer-events: none;
-      z-index: 0;
+      z-index: 2;
     }
 
     /* pulsing orange glow orb */
@@ -192,72 +222,45 @@
       30%  { opacity: 1; }
       100% { transform: translate(-50%, -50%) scale(1.12); opacity: 0; }
     }
-    .hero-inner { position: relative; z-index: 2; }
+    .hero-inner { position: relative; z-index: 3; }
 
-    /* ── SVG HERO BACKGROUND ── */
-    .hero-bg {
+    /* ── MINIMAL SHIELD EMBLEM ── */
+    .hero-emblem {
       position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 280px;
+      opacity: 0.55;
       pointer-events: none;
-      overflow: hidden;
+      z-index: 1;
+      animation: emblemFloat 5s ease-in-out infinite;
     }
-    .hero-bg svg {
-      width: 100%;
-      height: 100%;
-      max-width: 860px;
-      max-height: 100%;
-    }
-
-    /* shield group breathes */
-    .shield-group {
-      animation: shieldBreath 4s ease-in-out infinite;
-      transform-origin: 400px 300px;
-    }
-    /* background glow orb pulses */
-    .svg-bg-glow {
-      animation: svgGlowPulse 4s ease-in-out infinite;
-      transform-origin: 400px 300px;
-    }
-    /* three expanding rings, staggered */
-    .svg-ring { transform-origin: 400px 300px; }
-    .svg-ring-1 { animation: svgRingExpand 4s ease-in-out infinite 0s; }
-    .svg-ring-2 { animation: svgRingExpand 4s ease-in-out infinite 0.9s; }
-    .svg-ring-3 { animation: svgRingExpand 4s ease-in-out infinite 1.8s; }
-    /* lock icon subtle float */
-    .lock-group {
-      animation: lockFloat 4s ease-in-out infinite;
-      transform-origin: 400px 330px;
+    .hero-emblem svg { width: 100%; height: auto; display: block; }
+    @keyframes emblemFloat {
+      0%, 100% { transform: translate(-50%, -50%); }
+      50%       { transform: translate(-50%, -53%); }
     }
 
-    @keyframes shieldBreath {
-      0%, 100% { opacity: 1;    transform: scale(1); }
-      50%       { opacity: 0.82; transform: scale(1.03); }
+    /* ── FULL-PAGE PARTICLE CANVAS (fixed, behind all content) ── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      display: block;
     }
-    @keyframes svgGlowPulse {
-      0%, 100% { opacity: 0.55; transform: scale(1); }
-      50%       { opacity: 1;    transform: scale(1.22); }
-    }
-    @keyframes svgRingExpand {
-      0%   { transform: scale(0.72); opacity: 0; }
-      20%  { opacity: 1; }
-      100% { transform: scale(1.45); opacity: 0; }
-    }
-    @keyframes lockFloat {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-6px); }
-    }
+
 
     .trial-badge {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      background: rgba(34, 197, 94, 0.12);
-      border: 1px solid rgba(34, 197, 94, 0.35);
-      color: var(--green);
+      background: rgba(255, 107, 0, 0.1);
+      border: 1px solid rgba(255, 107, 0, 0.32);
+      color: var(--orange);
       font-size: 0.82rem;
       font-weight: 700;
       padding: 0.35rem 1rem;
@@ -268,7 +271,7 @@
     .trial-badge .pulse {
       width: 8px; height: 8px;
       border-radius: 50%;
-      background: var(--green);
+      background: var(--orange);
       animation: pulse 1.8s ease-in-out infinite;
       flex-shrink: 0;
     }
@@ -296,15 +299,18 @@
     .hero-sub-fa {
       color: var(--text2);
       font-size: 1.1rem;
+      line-height: 1.85;
       max-width: 580px;
-      margin: 0 auto 0.5rem;
+      margin: 1rem auto 0.7rem;
     }
     .hero-sub-en {
       color: var(--muted);
       font-size: 0.88rem;
       direction: ltr;
-      margin-bottom: 2.5rem;
+      line-height: 1.7;
+      margin-bottom: 2.8rem;
       font-weight: 400;
+      letter-spacing: 0.02em;
     }
 
     .hero-btns {
@@ -334,6 +340,16 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 32px rgba(255,107,0,0.35);
     }
+
+    /* pulse glow on the hero's primary CTA only */
+    @keyframes ctaGlow {
+      0%, 100% { box-shadow: 0 4px 24px rgba(255,107,0,0.28); }
+      50%       { box-shadow: 0 4px 40px rgba(255,107,0,0.72), 0 0 0 8px rgba(255,107,0,0.1); }
+    }
+    .hero-btns .btn-orange {
+      animation: ctaGlow 2.6s ease-in-out infinite;
+    }
+    .hero-btns .btn-orange:hover { animation: none; }
 
     .btn-ghost {
       display: inline-block;
@@ -378,12 +394,15 @@
       grid-template-columns: repeat(4, 1fr);
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
     }
     .stat-item {
       text-align: center;
       padding: 2.2rem 1rem;
       border-left: 1px solid var(--border);
-      background: var(--bg2);
+      background: rgba(17, 17, 17, 0.78);
+      backdrop-filter: blur(4px);
     }
     .stat-item:last-child { border-left: none; }
     .stat-num {
@@ -399,7 +418,7 @@
     /* ════════════════════════════════
        SECTION SHARED
     ════════════════════════════════ */
-    section { padding: 5rem 6%; }
+    section { padding: 5rem 6%; position: relative; z-index: 1; }
 
     .sec-tag {
       display: inline-block;
@@ -430,7 +449,7 @@
     /* ════════════════════════════════
        FEATURES
     ════════════════════════════════ */
-    #features { background: var(--bg2); }
+    #features { background: transparent; }
 
     .features-grid {
       display: grid;
@@ -482,7 +501,7 @@
     /* ════════════════════════════════
        PRICING
     ════════════════════════════════ */
-    #pricing { background: var(--bg); }
+    #pricing { background: transparent; }
 
     .plan-toggle {
       display: flex;
@@ -528,78 +547,113 @@
       color: #000;
     }
 
-    .pricing-table-wrap {
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 0.55rem;
       margin-top: 2.5rem;
+      direction: ltr;
+      min-width: 0;
+    }
+
+    .price-card {
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
+      border-radius: 13px;
+      padding: 1.1rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      direction: rtl;
+      min-width: 0;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .price-card:hover {
+      border-color: var(--orange);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(255,107,0,0.12);
+    }
+    /* 50 GB — orange highlight */
+    .price-card.pc-popular {
+      border-color: var(--orange);
+      background: rgba(255,107,0,0.05);
+    }
+    /* 100 GB — orange highlight (same brand) */
+    .price-card.pc-best {
+      border-color: var(--orange);
+      background: rgba(255,107,0,0.04);
+    }
+    /* 1000 GB — default border, no special color */
+    .price-card.pc-heavy {
+      border-color: var(--border);
+      background: var(--surface);
     }
 
-    .pricing-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .pricing-table thead tr {
-      background: var(--surface2);
-    }
-
-    .pricing-table th {
-      padding: 1rem 1.4rem;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--muted);
-      text-align: right;
-      border-bottom: 1px solid var(--border);
-      letter-spacing: 0.03em;
-    }
-    .pricing-table th.en { direction: ltr; text-align: left; }
-    .pricing-table th:last-child { text-align: center; }
-
-    .pricing-table tbody tr {
-      border-bottom: 1px solid var(--border);
-      transition: background 0.15s;
-    }
-    .pricing-table tbody tr:last-child { border-bottom: none; }
-    .pricing-table tbody tr:hover { background: var(--surface2); }
-    .pricing-table tbody tr.highlight { background: var(--orange-glow2); }
-    .pricing-table tbody tr.highlight:hover { background: rgba(255,107,0,0.12); }
-
-    .pricing-table td {
-      padding: 1rem 1.4rem;
-      font-size: 0.95rem;
-    }
-
-    .td-gb {
-      font-weight: 800;
-      font-size: 1.05rem;
-      direction: ltr;
-      color: var(--text);
-    }
-    .td-gb span { color: var(--muted); font-size: 0.72rem; font-weight: 500; margin-right: 2px; }
-
-    .td-price {
-      direction: ltr;
-      text-align: left;
-    }
-    .price-toman {
-      font-weight: 800;
-      font-size: 1rem;
-      color: var(--orange);
-    }
-    .price-unit { color: var(--muted); font-size: 0.72rem; font-weight: 400; margin-right: 4px; }
-
-    .td-badge { text-align: center; }
-    .row-badge {
-      display: inline-block;
-      padding: 0.2rem 0.6rem;
-      border-radius: 6px;
+    .pc-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.22rem 0.65rem;
+      border-radius: 999px;
       font-size: 0.7rem;
       font-weight: 700;
+      width: fit-content;
     }
-    .badge-popular { background: rgba(255,107,0,0.15); color: var(--orange); border: 1px solid rgba(255,107,0,0.3); }
-    .badge-best    { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
-    .badge-heavy   { background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+    /* پرفروش — orange */
+    .pc-badge.badge-popular { background: rgba(255,107,0,0.15); color: var(--orange); border: 1px solid rgba(255,107,0,0.3); }
+    /* بهترین ارزش — orange (same) */
+    .pc-badge.badge-best    { background: rgba(255,107,0,0.12); color: var(--orange); border: 1px solid rgba(255,107,0,0.28); }
+    /* کاربر حرفه‌ای — muted neutral */
+    .pc-badge.badge-heavy   { background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid var(--border); }
+
+    .pc-vol {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text);
+      direction: ltr;
+      line-height: 1;
+    }
+    .pc-vol span {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-left: 2px;
+    }
+
+    .pc-price {
+      direction: ltr;
+      display: flex;
+      align-items: baseline;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+    }
+    .pc-amount {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--orange);
+    }
+    .pc-unit {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .pc-buy {
+      display: block;
+      background: var(--orange);
+      color: #000;
+      font-weight: 700;
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      text-decoration: none;
+      text-align: center;
+      margin-top: auto;
+      transition: background 0.2s, transform 0.15s;
+      font-family: 'Vazirmatn', system-ui, sans-serif;
+    }
+    .pc-buy:hover {
+      background: var(--orange2);
+      transform: translateY(-1px);
+    }
 
     .plan-panel { display: none; }
     .plan-panel.active { display: block; }
@@ -623,7 +677,10 @@
        FREE TRIAL SECTION
     ════════════════════════════════ */
     .trial-section {
-      background: var(--bg2);
+      position: relative;
+      z-index: 1;
+      background: rgba(17, 17, 17, 0.62);
+      backdrop-filter: blur(6px);
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
       padding: 4rem 6%;
@@ -666,7 +723,7 @@
     /* ════════════════════════════════
        CONTACT / TELEGRAM
     ════════════════════════════════ */
-    #contact { background: var(--bg); }
+    #contact { background: transparent; }
 
     .contact-grid {
       display: grid;
@@ -710,7 +767,9 @@
        CTA BANNER
     ════════════════════════════════ */
     .cta-banner {
-      background: linear-gradient(135deg, rgba(255,107,0,0.12) 0%, rgba(255,140,0,0.06) 50%, transparent 100%);
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(135deg, rgba(255,107,0,0.1) 0%, rgba(255,140,0,0.04) 50%, transparent 100%);
       border-top: 1px solid rgba(255,107,0,0.2);
       border-bottom: 1px solid rgba(255,107,0,0.2);
       text-align: center;
@@ -724,7 +783,10 @@
        FOOTER
     ════════════════════════════════ */
     footer {
-      background: var(--bg2);
+      position: relative;
+      z-index: 1;
+      background: rgba(10, 10, 10, 0.88);
+      backdrop-filter: blur(8px);
       border-top: 1px solid var(--border);
       padding: 2.5rem 6%;
       display: flex;
@@ -748,35 +810,100 @@
     }
 
     /* ════════════════════════════════
+       SCROLL REVEAL
+    ════════════════════════════════ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ════════════════════════════════
+       FLOATING ACTION BUTTON
+    ════════════════════════════════ */
+    .fab {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: var(--orange);
+      color: #000;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 0.7rem 1.3rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-family: 'Vazirmatn', sans-serif;
+      box-shadow: 0 4px 28px rgba(255, 107, 0, 0.5);
+      transform: translateY(88px);
+      opacity: 0;
+      transition: transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  opacity 0.3s ease, background 0.2s, box-shadow 0.2s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .fab.visible {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .fab:hover {
+      background: var(--orange2);
+      box-shadow: 0 6px 36px rgba(255, 107, 0, 0.65);
+      transform: translateY(-2px);
+    }
+    .fab svg { width: 15px; height: 15px; }
+
+    /* ════════════════════════════════
        RESPONSIVE
     ════════════════════════════════ */
+    @media (max-width: 1100px) {
+      .pricing-grid { grid-template-columns: repeat(4, 1fr); gap: 0.65rem; }
+    }
+    @media (max-width: 600px) {
+      .pricing-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+      .fab { bottom: 1.2rem; right: 1.2rem; padding: 0.6rem 1.1rem; font-size: 0.82rem; }
+    }
+
     @media (max-width: 768px) {
       nav { padding: 0 4%; }
       .nav-links { gap: 1rem; }
       .nav-links li:nth-child(1), .nav-links li:nth-child(2) { display: none; }
 
       section { padding: 4rem 4%; }
-      .hero {
-      position: relative;
-      text-align: center;
-      padding: 7rem 6% 6rem;
-      overflow: hidden;
-      background: var(--bg);
-    }
+      .hero { padding: 5rem 5% 5rem; }
 
       .stats { grid-template-columns: repeat(2, 1fr); }
       .stat-item:nth-child(2) { border-left: none; }
       .stat-item:nth-child(3) { border-top: 1px solid var(--border); }
       .stat-item:nth-child(4) { border-top: 1px solid var(--border); }
 
-      .pricing-table th.hide-mob,
-      .pricing-table td.hide-mob { display: none; }
-
       footer { flex-direction: column; align-items: flex-start; }
     }
+
+    /* ── LUCIDE ICONS ── */
+    .feat-icon svg { width: 26px; height: 26px; color: var(--orange); }
+    .trust-row .icon svg { width: 18px; height: 18px; vertical-align: text-bottom; }
+    .stat-num svg { width: 2rem; height: 2rem; vertical-align: middle; }
+    .contact-card-icon svg { width: 24px; height: 24px; color: var(--orange); }
+    .btn-orange svg { width: 18px; height: 18px; vertical-align: middle; }
+    .trial-section h2 svg { width: 1.1em; height: 1.1em; vertical-align: middle; }
+    .badge-fam svg { width: 12px; height: 12px; vertical-align: middle; }
+    .family-note .icon svg { width: 20px; height: 20px; vertical-align: middle; color: var(--orange); }
   </style>
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
+
+<!-- full-page particle network — fixed behind all content -->
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
 
 <!-- ════════ NAV ════════ -->
 <nav>
@@ -795,147 +922,31 @@
 <!-- ════════ HERO ════════ -->
 <section class="hero">
 
-  <!-- SVG shield / lock background -->
-  <div class="hero-bg" aria-hidden="true">
-    <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <!-- soft glow: blur + merge back onto source -->
-        <filter id="hglow-soft" x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <!-- hard glow: wide blur for the halo behind the shield -->
-        <filter id="hglow-hard" x="-120%" y="-120%" width="340%" height="340%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="32" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-
-        <!-- radial fill inside shield -->
-        <radialGradient id="shieldFill" cx="50%" cy="32%" r="62%">
-          <stop offset="0%"   stop-color="#ff8c00" stop-opacity="0.30"/>
-          <stop offset="55%"  stop-color="#ff6b00" stop-opacity="0.09"/>
-          <stop offset="100%" stop-color="#cc4400" stop-opacity="0.02"/>
-        </radialGradient>
-
-        <!-- top-to-bottom stroke gradient -->
-        <linearGradient id="shieldStroke" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%"   stop-color="#ffcc66" stop-opacity="1"/>
-          <stop offset="45%"  stop-color="#ff6b00" stop-opacity="1"/>
-          <stop offset="100%" stop-color="#993300" stop-opacity="0.6"/>
-        </linearGradient>
-
-        <!-- warm radial for the background glow orb -->
-        <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"   stop-color="#ff7700" stop-opacity="0.45"/>
-          <stop offset="100%" stop-color="#ff6b00" stop-opacity="0"/>
-        </radialGradient>
-      </defs>
-
-      <!-- ── background glow orb ── -->
-      <circle class="svg-bg-glow" cx="400" cy="300" r="220"
-              fill="url(#bgGlow)"/>
-
-      <!-- ── expanding pulse rings ── -->
-      <circle class="svg-ring svg-ring-1" cx="400" cy="300" r="178"
-              fill="none" stroke="#ff6b00" stroke-width="1.5" opacity="0.35"/>
-      <circle class="svg-ring svg-ring-2" cx="400" cy="300" r="218"
-              fill="none" stroke="#ff6b00" stroke-width="1"   opacity="0.20"/>
-      <circle class="svg-ring svg-ring-3" cx="400" cy="300" r="258"
-              fill="none" stroke="#ff6b00" stroke-width="0.5" opacity="0.10"/>
-
-      <!-- ── shield group (breathes) ── -->
-      <g class="shield-group">
-
-        <!-- halo glow behind shield -->
-        <path d="M400,105 L552,162 C555,164 557,167 557,171
-                 L557,318 C557,402 492,463 406,489 L400,491
-                 L394,489 C308,463 243,402 243,318
-                 L243,171 C243,167 245,164 248,162 Z"
-              fill="#ff6b00" opacity="0.14"
-              filter="url(#hglow-hard)"/>
-
-        <!-- shield body -->
-        <path d="M400,105 L552,162 C555,164 557,167 557,171
-                 L557,318 C557,402 492,463 406,489 L400,491
-                 L394,489 C308,463 243,402 243,318
-                 L243,171 C243,167 245,164 248,162 Z"
-              fill="url(#shieldFill)"
-              stroke="url(#shieldStroke)"
-              stroke-width="2.5"
-              filter="url(#hglow-soft)"/>
-
-        <!-- inner rim highlight -->
-        <path d="M400,119 L540,173 C542,175 544,177 544,180
-                 L544,316 C544,393 484,449 401,473 L400,475
-                 L399,473 C316,449 256,393 256,316
-                 L256,180 C256,177 258,175 260,173 Z"
-              fill="none"
-              stroke="#ffcc66"
-              stroke-width="1"
-              opacity="0.38"
-              filter="url(#hglow-soft)"/>
-
-        <!-- diagonal cross-hatching lines inside shield (subtle texture) -->
-        <line x1="310" y1="160" x2="490" y2="340" stroke="#ff6b00" stroke-width="0.4" opacity="0.12"/>
-        <line x1="290" y1="200" x2="510" y2="380" stroke="#ff6b00" stroke-width="0.4" opacity="0.09"/>
-        <line x1="490" y1="160" x2="310" y2="340" stroke="#ff6b00" stroke-width="0.4" opacity="0.12"/>
-        <line x1="510" y1="200" x2="290" y2="380" stroke="#ff6b00" stroke-width="0.4" opacity="0.09"/>
-
-        <!-- ── lock group (floats) ── -->
-        <g class="lock-group">
-          <!-- shackle -->
-          <path d="M368,302 L368,266 A32,32 0 0 1 432,266 L432,302"
-                fill="none"
-                stroke="#ff8c00"
-                stroke-width="10"
-                stroke-linecap="round"
-                filter="url(#hglow-soft)"/>
-          <!-- shackle inner lighter line -->
-          <path d="M368,302 L368,266 A32,32 0 0 1 432,266 L432,302"
-                fill="none"
-                stroke="#ffcc66"
-                stroke-width="3"
-                stroke-linecap="round"
-                opacity="0.5"/>
-
-          <!-- lock body -->
-          <rect x="348" y="297" width="104" height="86" rx="11"
-                fill="#ff6b00" fill-opacity="0.90"
-                filter="url(#hglow-soft)"/>
-          <!-- lock body inner bevel -->
-          <rect x="352" y="301" width="96" height="78" rx="9"
-                fill="none"
-                stroke="#ffcc66"
-                stroke-width="1"
-                opacity="0.45"/>
-
-          <!-- keyhole circle -->
-          <circle cx="400" cy="330" r="12" fill="#0a0a0a"/>
-          <!-- keyhole slot -->
-          <path d="M395,330 Q395,358 400,358 Q405,358 405,330"
-                fill="#0a0a0a"/>
-        </g>
-
-        <!-- top accent dot -->
-        <circle cx="400" cy="74" r="5"
-                fill="#ff9922" opacity="0.80"
-                filter="url(#hglow-soft)"/>
-        <!-- shoulder accent dots -->
-        <circle cx="559" cy="155" r="3.5" fill="#ff6b00" opacity="0.55" filter="url(#hglow-soft)"/>
-        <circle cx="241" cy="155" r="3.5" fill="#ff6b00" opacity="0.55" filter="url(#hglow-soft)"/>
-
-        <!-- energy streaks from top of shield -->
-        <line x1="400" y1="74"  x2="400" y2="106"
-              stroke="#ff8c00" stroke-width="1.5" opacity="0.55" stroke-linecap="round"/>
-        <line x1="558" y1="147" x2="553" y2="164"
-              stroke="#ff6b00" stroke-width="1"   opacity="0.35" stroke-linecap="round"/>
-        <line x1="242" y1="147" x2="247" y2="164"
-              stroke="#ff6b00" stroke-width="1"   opacity="0.35" stroke-linecap="round"/>
-
-        <!-- faint arc at bottom of shield interior -->
-        <path d="M310,420 Q400,460 490,420"
-              fill="none" stroke="#ff6b00" stroke-width="1" opacity="0.18"/>
-      </g>
+  <!-- minimal shield emblem -->
+  <div class="hero-emblem" aria-hidden="true">
+    <svg viewBox="0 0 200 230" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M100,8 L186,42 C188,43 190,46 190,49
+               L190,118 C190,170 150,207 102,222
+               L100,223 L98,222
+               C50,207 10,170 10,118
+               L10,49 C10,46 12,43 14,42 Z"
+            stroke="rgba(255,107,0,0.30)" stroke-width="1.5"/>
+      <path d="M100,26 L174,56 C176,57 177,59 177,62
+               L177,118 C177,160 143,192 101,205
+               L100,206 L99,205
+               C57,192 23,160 23,118
+               L23,62 C23,59 24,57 26,56 Z"
+            stroke="rgba(255,107,0,0.13)" stroke-width="1"/>
+      <!-- shackle -->
+      <path d="M82,134 L82,118 A18,18 0 0 1 118,118 L118,134"
+            stroke="rgba(255,107,0,0.55)" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- lock body -->
+      <rect x="74" y="132" width="52" height="34" rx="7"
+            fill="rgba(255,107,0,0.12)" stroke="rgba(255,107,0,0.45)" stroke-width="1.5"/>
+      <!-- keyhole -->
+      <circle cx="100" cy="149" r="5" fill="rgba(255,107,0,0.6)"/>
+      <line x1="100" y1="154" x2="100" y2="161"
+            stroke="rgba(255,107,0,0.45)" stroke-width="2.5" stroke-linecap="round"/>
     </svg>
   </div>
 
@@ -958,16 +969,16 @@
 
     <div class="hero-btns">
       <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="btn-orange">
-        &#128640; شروع آزمایش رایگان
+        <i data-lucide="rocket"></i> شروع آزمایش رایگان
       </a>
       <a href="#pricing" class="btn-ghost">مشاهده تعرفه‌ها</a>
     </div>
 
     <div class="trust-row">
-      <div class="item"><span class="icon">&#128274;</span> بدون ثبت لاگ</div>
-      <div class="item"><span class="icon">&#9889;</span> سرعت بالا</div>
-      <div class="item"><span class="icon">&#127759;</span> IP ثابت</div>
-      <div class="item"><span class="icon">&#9989;</span> لغو در هر زمان</div>
+      <div class="item"><span class="icon"><i data-lucide="lock"></i></span> بدون ثبت لاگ</div>
+      <div class="item"><span class="icon"><i data-lucide="zap"></i></span> سرعت بالا</div>
+      <div class="item"><span class="icon"><i data-lucide="globe"></i></span> IP ثابت</div>
+      <div class="item"><span class="icon"><i data-lucide="circle-check"></i></span> لغو در هر زمان</div>
     </div>
   </div>
 </section>
@@ -990,7 +1001,7 @@
     <span class="stat-lbl-en">Round-the-clock Support</span>
   </div>
   <div class="stat-item">
-    <span class="stat-num">&#128274;</span>
+    <span class="stat-num"><i data-lucide="lock"></i></span>
     <span class="stat-lbl-fa">اتصال امن و پایدار</span>
     <span class="stat-lbl-en">Secure Stable Connection</span>
   </div>
@@ -1005,37 +1016,37 @@
 
   <div class="features-grid">
     <div class="feat-card">
-      <div class="feat-icon">&#127760;</div>
+      <div class="feat-icon"><i data-lucide="globe"></i></div>
       <h3>IP ثابت اختصاصی</h3>
       <span class="en">Fixed Dedicated IP</span>
       <p>با IP ثابت، هویت آنلاین پایداری دارید. ایده‌آل برای کسب‌وکار، گیمینگ و دسترسی به سرویس‌های خارجی.</p>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">&#9889;</div>
+      <div class="feat-icon"><i data-lucide="zap"></i></div>
       <h3>سرعت فوق‌العاده بالا</h3>
       <span class="en">Ultra-High Speed</span>
       <p>پروتکل‌های بهینه‌شده، پینگ پایین و پهنای باند گسترده برای استریم، دانلود و گیمینگ بدون وقفه.</p>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">&#128279;</div>
+      <div class="feat-icon"><i data-lucide="link"></i></div>
       <h3>اتصال پایدار</h3>
       <span class="en">Stable Connection</span>
       <p>قطعی نداریم. سرورهای ما با آپتایم بالا، اتصال شما را حتی در ساعات شلوغ پایدار نگه می‌دارند.</p>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">&#128081;</div>
+      <div class="feat-icon"><i data-lucide="crown"></i></div>
       <h3>پشتیبانی ۲۴/۷</h3>
       <span class="en">24/7 Support</span>
       <p>تیم پشتیبانی ما هر ساعت از شبانه‌روز در تلگرام آماده پاسخگویی است. مشکل شما حل می‌شود.</p>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">&#128100;</div>
+      <div class="feat-icon"><i data-lucide="users"></i></div>
       <h3>پلن خانوادگی</h3>
       <span class="en">Family Plan</span>
       <p>یک اشتراک برای چند نفر. پلن خانوادگی برای استفاده مشترک طراحی شده با ظرفیت و قیمت بهتر.</p>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">&#128274;</div>
+      <div class="feat-icon"><i data-lucide="lock"></i></div>
       <h3>حریم خصوصی کامل</h3>
       <span class="en">Full Privacy</span>
       <p>رمزنگاری قوی، سیاست عدم ثبت لاگ و حفاظت از هویت شما در هر اتصال.</p>
@@ -1047,7 +1058,7 @@
 
 <!-- ════════ FREE TRIAL ════════ -->
 <div class="trial-section">
-  <h2>&#127381; آزمایش ۲۴ ساعته کاملاً رایگان</h2>
+  <h2><i data-lucide="party-popper"></i> آزمایش ۲۴ ساعته کاملاً رایگان</h2>
   <p class="sub-fa">قبل از خرید، امتحان کنید — بدون پرداخت، بدون کارت اعتباری</p>
   <p class="sub-en">Try before you buy — No payment · No credit card required</p>
 
@@ -1067,7 +1078,7 @@
   </div>
 
   <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="btn-orange">
-    &#129302; شروع آزمایش در تلگرام
+    <i data-lucide="bot"></i> شروع آزمایش در تلگرام
   </a>
 </div>
 
@@ -1084,143 +1095,109 @@
       پلن شخصی
     </button>
     <button class="toggle-btn" onclick="switchPlan('family', this)">
-      <span class="badge-fam">&#128101;</span> پلن خانوادگی
+      <span class="badge-fam"><i data-lucide="users"></i></span> پلن خانوادگی
     </button>
   </div>
 
   <!-- PERSONAL PLAN -->
   <div class="plan-panel active" id="panel-personal">
-    <div class="pricing-table-wrap">
-      <table class="pricing-table">
-        <thead>
-          <tr>
-            <th>حجم</th>
-            <th class="en hide-mob">Volume</th>
-            <th>قیمت (تومان)</th>
-            <th class="hide-mob"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="td-gb">10 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۱۸۰,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"></td>
-          </tr>
-          <tr>
-            <td class="td-gb">20 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۳۴۸,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"></td>
-          </tr>
-          <tr>
-            <td class="td-gb">30 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۵۰۵,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"></td>
-          </tr>
-          <tr>
-            <td class="td-gb">40 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۶۵۱,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"></td>
-          </tr>
-          <tr class="highlight">
-            <td class="td-gb">50 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۷۸۵,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"><span class="row-badge badge-popular">پرفروش</span></td>
-          </tr>
-          <tr>
-            <td class="td-gb">100 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۱,۵۱۴,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"><span class="row-badge badge-best">بهترین ارزش</span></td>
-          </tr>
-          <tr>
-            <td class="td-gb">200 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۲,۹۱۴,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"></td>
-          </tr>
-          <tr>
-            <td class="td-gb">1000 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۱۴,۰۰۰,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"><span class="row-badge badge-heavy">کاربر حرفه‌ای</span></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="pc-vol">10 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۱۸۰,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
+      <div class="price-card">
+        <div class="pc-vol">20 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۳۴۸,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
+      <div class="price-card">
+        <div class="pc-vol">30 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۵۰۵,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
+      <div class="price-card">
+        <div class="pc-vol">40 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۶۵۱,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
+      <div class="price-card pc-popular">
+        <span class="pc-badge badge-popular">پرفروش</span>
+        <div class="pc-vol">50 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۷۸۵,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
+      <div class="price-card pc-best">
+        <span class="pc-badge badge-best">بهترین ارزش</span>
+        <div class="pc-vol">100 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۱,۵۱۴,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
+      <div class="price-card">
+        <div class="pc-vol">200 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۲,۹۱۴,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
+      <div class="price-card pc-heavy">
+        <span class="pc-badge badge-heavy">کاربر حرفه‌ای</span>
+        <div class="pc-vol">1000 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۱۴,۰۰۰,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
     </div>
   </div>
 
   <!-- FAMILY PLAN -->
   <div class="plan-panel" id="panel-family">
-    <div class="pricing-table-wrap">
-      <table class="pricing-table">
-        <thead>
-          <tr>
-            <th>حجم</th>
-            <th class="en hide-mob">Volume</th>
-            <th>قیمت (تومان)</th>
-            <th class="hide-mob"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="td-gb">10 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۲۱۶,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"></td>
-          </tr>
-          <tr>
-            <td class="td-gb">20 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۴۱۸,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"></td>
-          </tr>
-          <tr>
-            <td class="td-gb">30 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۶۰۶,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"></td>
-          </tr>
-          <tr>
-            <td class="td-gb">40 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۷۸۱,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"></td>
-          </tr>
-          <tr class="highlight">
-            <td class="td-gb">50 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۹۴۲,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"><span class="row-badge badge-popular">پرفروش</span></td>
-          </tr>
-          <tr>
-            <td class="td-gb">100 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۱,۸۱۷,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"><span class="row-badge badge-best">بهترین ارزش</span></td>
-          </tr>
-          <tr>
-            <td class="td-gb">200 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۳,۴۹۷,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"></td>
-          </tr>
-          <tr>
-            <td class="td-gb">1000 <span>GB</span></td>
-            <td class="td-price hide-mob" dir="ltr"></td>
-            <td class="td-price"><span class="price-toman">۱۶,۸۰۰,۰۰۰</span> <span class="price-unit">تومان</span></td>
-            <td class="td-badge hide-mob"><span class="row-badge badge-heavy">کاربر حرفه‌ای</span></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="pc-vol">10 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۲۱۶,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
+      <div class="price-card">
+        <div class="pc-vol">20 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۴۱۸,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
+      <div class="price-card">
+        <div class="pc-vol">30 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۶۰۶,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
+      <div class="price-card">
+        <div class="pc-vol">40 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۷۸۱,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
+      <div class="price-card pc-popular">
+        <span class="pc-badge badge-popular">پرفروش</span>
+        <div class="pc-vol">50 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۹۴۲,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
+      <div class="price-card pc-best">
+        <span class="pc-badge badge-best">بهترین ارزش</span>
+        <div class="pc-vol">100 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۱,۸۱۷,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
+      <div class="price-card">
+        <div class="pc-vol">200 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۳,۴۹۷,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
+      <div class="price-card pc-heavy">
+        <span class="pc-badge badge-heavy">کاربر حرفه‌ای</span>
+        <div class="pc-vol">1000 <span>GB</span></div>
+        <div class="pc-price"><span class="pc-amount">۱۶,۸۰۰,۰۰۰</span> <span class="pc-unit">تومان</span></div>
+        <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="pc-buy">خرید</a>
+      </div>
     </div>
 
     <div class="family-note">
-      <span class="icon">&#128101;</span>
+      <span class="icon"><i data-lucide="users"></i></span>
       <span>
         <strong>پلن خانوادگی</strong> برای استفاده مشترک چند نفر طراحی شده است.
         حجم مصرف بین اعضای خانواده تقسیم می‌شود.
@@ -1238,21 +1215,21 @@
 
   <div class="contact-grid">
     <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="contact-card">
-      <div class="contact-card-icon">&#129302;</div>
+      <div class="contact-card-icon"><i data-lucide="bot"></i></div>
       <span class="contact-card-label">ربات خودکار — Telegram Bot</span>
       <span class="contact-card-value">@onyxour_vpn_bot</span>
       <span class="contact-card-desc">خرید اشتراک، آزمایش رایگان و مدیریت حساب</span>
     </a>
 
     <a href="https://t.me/r_nsr_0" target="_blank" class="contact-card">
-      <div class="contact-card-icon">&#128588;</div>
+      <div class="contact-card-icon"><i data-lucide="headphones"></i></div>
       <span class="contact-card-label">پشتیبانی — Direct Support</span>
       <span class="contact-card-value">@r_nsr_0</span>
       <span class="contact-card-desc">سوال، مشکل فنی یا راهنمایی در خرید</span>
     </a>
 
     <a href="https://t.me/onyxour_vpn" target="_blank" class="contact-card">
-      <div class="contact-card-icon">&#128227;</div>
+      <div class="contact-card-icon"><i data-lucide="megaphone"></i></div>
       <span class="contact-card-label">کانال رسمی — Official Channel</span>
       <span class="contact-card-value">@onyxour_vpn</span>
       <span class="contact-card-desc">اخبار، تخفیف‌ها و اطلاعیه‌های رسمی</span>
@@ -1266,7 +1243,7 @@
   <p class="sub-fa">همین الان با ۲۴ ساعت آزمایش رایگان شروع کنید</p>
   <p class="sub-en">Start with a free 24-hour trial — no commitment required</p>
   <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="btn-orange">
-    &#128640; شروع آزمایش رایگان
+    <i data-lucide="rocket"></i> شروع آزمایش رایگان
   </a>
 </div>
 
@@ -1285,13 +1262,142 @@
   </div>
 </footer>
 
+<!-- floating CTA — appears after hero scrolls out of view -->
+<a id="fab" href="https://t.me/onyxour_vpn_bot" target="_blank" class="fab" aria-label="شروع رایگان">
+  <i data-lucide="zap"></i> شروع رایگان
+</a>
+
 <script>
+  lucide.createIcons();
+
+  /* ── NAV GLASS ON SCROLL ── */
+  (function () {
+    const nav = document.querySelector('nav');
+    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // run once in case page loads mid-scroll
+  })();
+
+  /* ── FLOATING ACTION BUTTON ── */
+  (function () {
+    const fab  = document.getElementById('fab');
+    const hero = document.querySelector('.hero');
+    const check = () => fab.classList.toggle('visible', hero.getBoundingClientRect().bottom < 0);
+    window.addEventListener('scroll', check, { passive: true });
+  })();
+
+  /* ── SCROLL REVEAL ── */
+  (function () {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+    // Cards within grids — staggered per grid
+    [
+      ['.features-grid .feat-card',   0.08],
+      ['.contact-grid .contact-card', 0.10],
+      ['.stat-item',                  0.06],
+    ].forEach(([sel, step]) => {
+      document.querySelectorAll(sel).forEach((el, i) => {
+        el.classList.add('reveal');
+        el.style.transitionDelay = `${i * step}s`;
+        io.observe(el);
+      });
+    });
+
+    // Section-level reveals (no stagger)
+    document.querySelectorAll('#pricing, .trial-section, .cta-banner, footer').forEach(el => {
+      el.classList.add('reveal');
+      io.observe(el);
+    });
+  })();
+
   function switchPlan(plan, btn) {
     document.querySelectorAll('.plan-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('panel-' + plan).classList.add('active');
     btn.classList.add('active');
   }
+
+  /* ── FULL-PAGE PARTICLE NETWORK ── */
+  (function () {
+    const canvas = document.getElementById('bg-canvas');
+    if (!canvas) return;
+    const ctx  = canvas.getContext('2d');
+    const N    = 80;
+    const LINK = 150;
+
+    let W, H, pts, raf;
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    function init() {
+      pts = Array.from({ length: N }, () => ({
+        x:  Math.random() * W,
+        y:  Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.45,
+        vy: (Math.random() - 0.5) * 0.35,
+        r:  1.4 + Math.random() * 2.4,
+      }));
+    }
+
+    function tick() {
+      ctx.clearRect(0, 0, W, H);
+
+      for (const p of pts) {
+        p.x = (p.x + p.vx + W) % W;
+        p.y = (p.y + p.vy + H) % H;
+      }
+
+      /* connection lines */
+      ctx.lineWidth = 0.8;
+      for (let i = 0; i < pts.length; i++) {
+        for (let j = i + 1; j < pts.length; j++) {
+          const dx = pts[i].x - pts[j].x;
+          const dy = pts[i].y - pts[j].y;
+          const d  = Math.sqrt(dx * dx + dy * dy);
+          if (d < LINK) {
+            ctx.globalAlpha = (1 - d / LINK) * 0.52;
+            ctx.strokeStyle = '#ff7a00';
+            ctx.beginPath();
+            ctx.moveTo(pts[i].x, pts[i].y);
+            ctx.lineTo(pts[j].x, pts[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      /* glowing dots */
+      ctx.globalAlpha  = 1;
+      ctx.shadowBlur   = 14;
+      ctx.shadowColor  = 'rgba(255, 107, 0, 0.9)';
+      ctx.fillStyle    = '#ff8c22';
+      for (const p of pts) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.shadowBlur = 0;
+
+      raf = requestAnimationFrame(tick);
+    }
+
+    resize();
+    init();
+    tick();
+
+    window.addEventListener('resize', () => {
+      cancelAnimationFrame(raf);
+      resize();
+      init();
+      tick();
+    });
+  })();
 </script>
 
 </body>
