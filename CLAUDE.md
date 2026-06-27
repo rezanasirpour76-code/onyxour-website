@@ -67,12 +67,30 @@
 
 ## زیرساخت و سرور
 
-### VPS
+### سرورها
+
+| | VPS1 — Onyxour | VPS2 — PriceScout |
+|-|----------------|-------------------|
+| **IP** | `204.168.192.40` | `178.105.14.66` |
+| **پلن** | — | CX23 |
+| **موقعیت** | — | Falkenstein, Germany |
+| **کاربرد** | Marzban VPN | PriceScout bot |
+
+### VPS1 — Onyxour
 | مورد | مقدار |
 |------|-------|
 | IP سرور | `204.168.192.40` |
 | مسیر فایل وب | `/var/www/html/index.html` |
+| Marzban certs | `/var/lib/marzban/certs/` |
+| SSL hook | `/etc/letsencrypt/renewal-hooks/deploy/marzban-ssl.sh` |
 | روش deploy | SSH با کلید `~/.ssh/id_ed25519` |
+
+### VPS2 — PriceScout
+| مورد | مقدار |
+|------|-------|
+| IP سرور | `178.105.14.66` |
+| پلن | CX23 — Hetzner Falkenstein, Germany |
+| کاربرد | ربات تجاری ردیابی قیمت (Trendyol / Amazon) |
 
 ### دستور deploy دستی
 ```bash
