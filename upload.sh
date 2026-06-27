@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+#!/usr/bin/env bash
+ssh -i ~/.ssh/id_ed25519 root@204.168.192.40 'cat > /var/www/html/index.html' << 'ONYXOUR_EOF'
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
@@ -141,20 +143,6 @@
     }
     .nav-cta:hover { background: var(--orange2) !important; transform: translateY(-1px); }
 
-    .nav-hamburger {
-      display: none;
-      background: none;
-      border: none;
-      color: var(--text);
-      cursor: pointer;
-      padding: 0.4rem;
-      border-radius: 6px;
-      line-height: 0;
-      transition: background 0.2s;
-    }
-    .nav-hamburger:hover { background: rgba(255,107,0,0.12); }
-    .nav-hamburger svg { width: 22px; height: 22px; display: block; }
-
     /* ════════════════════════════════
        HERO
     ════════════════════════════════ */
@@ -264,7 +252,6 @@
       height: 100vh;
       z-index: 0;
       pointer-events: none;
-      touch-action: pan-y;
       display: block;
     }
 
@@ -578,7 +565,6 @@
       padding: 1.1rem 0.85rem;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       gap: 0.5rem;
       direction: rtl;
       min-width: 0;
@@ -885,48 +871,13 @@
     }
     @media (max-width: 600px) {
       .pricing-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
-      .trial-badge { font-size: 0.72rem; padding: 0.25rem 0.75rem; margin-bottom: 1.1rem; }
-      .trial-badge .pulse { width: 6px; height: 6px; }
       .fab { bottom: 1.2rem; right: 1.2rem; padding: 0.6rem 1.1rem; font-size: 0.82rem; }
     }
 
     @media (max-width: 768px) {
-      nav { padding: 0 4%; position: relative; }
-
-      .nav-hamburger { display: flex; align-items: center; }
-
-      .nav-links {
-        display: none;
-        position: absolute;
-        top: 64px;
-        left: 0;
-        right: 0;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0;
-        background: rgba(6,6,6,0.97);
-        backdrop-filter: blur(28px);
-        border-bottom: 1px solid rgba(255,107,0,0.18);
-        padding: 0.25rem 6% 1rem;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-        z-index: 199;
-      }
-      .nav-links.open { display: flex; }
-
-      .nav-links li { border-bottom: 1px solid var(--border); }
-      .nav-links li:last-child { border-bottom: none; padding-top: 0.5rem; }
-      .nav-links a {
-        display: block;
-        padding: 0.8rem 0;
-        font-size: 1rem;
-        color: var(--text2);
-      }
-      .nav-cta {
-        display: block !important;
-        text-align: center;
-        padding: 0.7rem 1rem !important;
-        margin: 0 !important;
-      }
+      nav { padding: 0 4%; }
+      .nav-links { gap: 1rem; }
+      .nav-links li:nth-child(1), .nav-links li:nth-child(2) { display: none; }
 
       section { padding: 4rem 4%; }
       .hero { padding: 5rem 5% 5rem; }
@@ -936,7 +887,7 @@
       .stat-item:nth-child(3) { border-top: 1px solid var(--border); }
       .stat-item:nth-child(4) { border-top: 1px solid var(--border); }
 
-      footer { flex-direction: column; align-items: flex-start; padding-bottom: 100px; }
+      footer { flex-direction: column; align-items: flex-start; }
     }
 
     /* ── LUCIDE ICONS ── */
@@ -962,15 +913,12 @@
     <span>onyx</span><span class="o1">our</span>
     <span class="dot-vpn">VPN</span>
   </div>
-  <ul class="nav-links" id="nav-links">
+  <ul class="nav-links">
     <li><a href="#features">امکانات</a></li>
     <li><a href="#pricing">تعرفه‌ها</a></li>
     <li><a href="#contact">پشتیبانی</a></li>
     <li><a href="https://t.me/onyxour_vpn_bot" target="_blank" class="nav-cta">شروع رایگان</a></li>
   </ul>
-  <button class="nav-hamburger" id="nav-hamburger" aria-label="منو" aria-expanded="false">
-    <i data-lucide="menu"></i>
-  </button>
 </nav>
 
 <!-- ════════ HERO ════════ -->
@@ -1018,7 +966,8 @@
       <span class="grad">امن و بدون مرز</span>
     </h1>
 
-    <p class="hero-sub-fa">اینترنت بدون محدودیت، همیشه و همه‌جا</p>
+    <p class="hero-sub-fa">VPN پرسرعت با IP ثابت، اتصال پایدار و پشتیبانی ۲۴/۷</p>
+    <p class="hero-sub-en">Fast & Stable VPN — Fixed IP · High Speed · 24/7 Support</p>
 
     <div class="hero-btns">
       <a href="https://t.me/onyxour_vpn_bot" target="_blank" class="btn-orange">
@@ -1339,32 +1288,6 @@
     window.addEventListener('scroll', check, { passive: true });
   })();
 
-  /* ── HAMBURGER MENU ── */
-  (function () {
-    const btn   = document.getElementById('nav-hamburger');
-    const links = document.getElementById('nav-links');
-    if (!btn) return;
-
-    function setIcon(open) {
-      btn.querySelector('[data-lucide]').setAttribute('data-lucide', open ? 'x' : 'menu');
-      lucide.createIcons();
-    }
-
-    btn.addEventListener('click', () => {
-      const open = links.classList.toggle('open');
-      btn.setAttribute('aria-expanded', open);
-      setIcon(open);
-    });
-
-    links.addEventListener('click', e => {
-      if (e.target.tagName === 'A') {
-        links.classList.remove('open');
-        btn.setAttribute('aria-expanded', 'false');
-        setIcon(false);
-      }
-    });
-  })();
-
   /* ── SCROLL REVEAL ── */
   (function () {
     const io = new IntersectionObserver(entries => {
@@ -1405,13 +1328,10 @@
     const canvas = document.getElementById('bg-canvas');
     if (!canvas) return;
     const ctx  = canvas.getContext('2d');
+    const N    = 80;
     const LINK = 150;
 
     let W, H, pts, raf;
-
-    function particleCount() {
-      return window.innerWidth <= 600 ? 35 : 80;
-    }
 
     function resize() {
       W = canvas.width  = window.innerWidth;
@@ -1419,7 +1339,6 @@
     }
 
     function init() {
-      const N = particleCount();
       pts = Array.from({ length: N }, () => ({
         x:  Math.random() * W,
         y:  Math.random() * H,
@@ -1470,25 +1389,19 @@
       raf = requestAnimationFrame(tick);
     }
 
-    function start() { if (!raf) tick(); }
-    function stop()  { cancelAnimationFrame(raf); raf = null; }
-
     resize();
     init();
     tick();
 
     window.addEventListener('resize', () => {
-      stop();
+      cancelAnimationFrame(raf);
       resize();
       init();
-      start();
-    });
-
-    document.addEventListener('visibilitychange', () => {
-      document.hidden ? stop() : start();
+      tick();
     });
   })();
 </script>
 
 </body>
 </html>
+ONYXOUR_EOF

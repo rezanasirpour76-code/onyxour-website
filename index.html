@@ -874,8 +874,7 @@
 
     @media (max-width: 768px) {
       nav { padding: 0 4%; }
-      .nav-links { gap: 1rem; }
-      .nav-links li:nth-child(1), .nav-links li:nth-child(2) { display: none; }
+      .nav-links li:not(:last-child) { display: none; }
 
       section { padding: 4rem 4%; }
       .hero { padding: 5rem 5% 5rem; }
