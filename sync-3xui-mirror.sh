@@ -29,6 +29,21 @@ SSHO=(-i "$KEY" -o ConnectTimeout=15 -o StrictHostKeyChecking=accept-new)
 
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 
+# Pre-flight: warn about reality (inbound-8443) members with a missing/incorrect
+# flow. This fork excludes empty-flow reality members from the runtime config, so
+# they will NOT actually work on reality/Germany even though their sub advertises
+# it. Fix in the panel (set flow = xtls-rprx-vision) then re-run. Non-blocking.
+echo "[0/5] Pre-flight: reality users missing the vision flow ..."
+BROKEN=$(ssh "${SSHO[@]}" "$VPS1" "sqlite3 /etc/x-ui/x-ui.db \"SELECT c.email FROM clients c JOIN client_inbounds ci ON ci.client_id=c.id WHERE ci.inbound_id=9 AND (COALESCE(c.flow,'')<>'xtls-rprx-vision' OR COALESCE(ci.flow_override,'')<>'xtls-rprx-vision');\"" 2>/dev/null || true)
+if [ -n "$BROKEN" ]; then
+  echo "  ⚠️  These reality users have a missing/incorrect flow and will NOT work on"
+  echo "      Germany reality (sub may show it, but the server won't serve them):"
+  echo "$BROKEN" | sed 's/^/        - /'
+  echo "      Fix: in the 3X-UI panel set each one's flow to 'xtls-rprx-vision', then re-run."
+else
+  echo "  OK — all reality users have the vision flow."
+fi
+
 echo "[1/5] Regenerating mirror config from VPS1 runtime config.json ..."
 ssh "${SSHO[@]}" "$VPS1" python3 - > "$TMP/config.json" <<'PY'
 import json, sys

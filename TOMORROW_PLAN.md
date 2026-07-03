@@ -59,6 +59,12 @@ collide. Cross-auth impossible. Confirmed at process level (different PIDs).
 - It regenerates the mirror config from VPS1's runtime config.json, validates with
   `xray -test` on VPS2, backs up + swaps + reloads the mirror. Aborts (mirror untouched)
   on any validation failure. Only mirrors inbounds 2052/2082/2095/8443 (separation kept).
+- **⚠️ When creating a reality user in the 3X-UI panel, set its flow to `xtls-rprx-vision`.**
+  The panel does NOT force it — an empty-flow reality user is **excluded from the runtime**
+  (so it won't work on Helsinki OR Germany reality) even though its **sub still advertises**
+  the reality configs (misleading). The sync script's `[0/5]` pre-flight now warns about any
+  such user. If you hit it: set flow in the panel → restart x-ui on VPS1 (refreshes runtime)
+  → re-run the sync. (Fixed this exact case for user `ahrvz6f5j2` on 2026-07-03.)
 
 ## Firewall / ports (VPS2) — verified 2026-07-03
 - All VPN ports externally OPEN: 2052,2082,2083,2086,2095,8443,8880. SSH 22 open.
