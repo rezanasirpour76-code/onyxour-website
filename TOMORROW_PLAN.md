@@ -54,16 +54,33 @@ collide. Cross-auth impossible. Confirmed at process level (different PIDs).
 - No host firewall (ufw inactive; iptables only Docker's auto chains). No restrictive
   Hetzner cloud FW on VPN ports. PriceScout exposes **no** ports.
 
+## Phase 5 — PriceScout egress IP isolation — ✅ DONE 2026-07-03
+Floating IP **91.98.101.23** (Hetzner, Falkenstein) assigned to VPS2. Goal met:
+**PriceScout egresses via 91.98.101.23; VPN + everything else via the main 178.105.14.66.**
+- Floating IP added to `eth0`; Hetzner allows outbound from it (verified `--interface`).
+- Isolation by **cgroup v2** (PriceScout runs as root, so UID match won't do): mark
+  `pricescout.service` cgroup in `mangle OUTPUT` → `nat POSTROUTING SNAT --to-source 91.98.101.23`.
+- IPv6 leak closed: system prefers IPv6, and the Floating IP is v4-only, so
+  `ip6tables OUTPUT -m cgroup … -j REJECT` forces PriceScout to IPv4 (targets are dual-stack).
+- **⚠️ Gotcha:** the iptables cgroup2 `--path` match binds to the cgroup **object at add-time**;
+  pricescout's cgroup is recreated on every restart → rules go stale. Fixed by re-binding on
+  each start via a **`ExecStartPre` drop-in** (binds before the bot's first packet — no race;
+  a mid-run `ExecStartPost` del+add would briefly leak, so it's NOT used).
+- Persistence: `priceout-floating-ip.service` (enabled, owns the IP) + script
+  `/usr/local/sbin/priceout-floating-ip.sh` (modes ip-up/down, rules-up/down) +
+  pricescout drop-in `10-floating-egress.conf` (ExecStartPre=rules-up, ExecStopPost=rules-down).
+- Verified: bot scrape egress = 91.98.101.23 (api.ipify/icanhazip/httpbin); all 45 xray/VPN
+  flows = 178.105.14.66; v6 REJECT + v4 SNAT counters incrementing. rp_filter=2 (loose) is
+  what lets replies to the Floating IP return. **Full rollback:** `systemctl disable --now
+  priceout-floating-ip` + remove the drop-in. Net backups in `/root/backups/netphase5-*`.
+- **Not yet tested across a real reboot** (avoided rebooting to not disrupt VPN users); the
+  mechanism is standard + enabled. Reboot at a low-traffic time to fully confirm boot-time.
+
 ## Remaining / optional
-1. **Phase 5 — second IP for VPS2 (~€1/mo, user wants it, not yet done).** Buy a Hetzner
-   Cloud **Floating IP** (IPv4, Falkenstein) → assign to VPS2. Then I add an alias +
-   policy routing so **PriceScout scraping egresses the 2nd IP** and **VPN egresses the
-   main IP** (protects the scraping IP reputation from the VPN IP and vice-versa). Tell me
-   the IP once bought.
-2. **Optional hardening:** restrict node control ports **62050/62051 to VPS1 only**
+1. **Optional hardening:** restrict node control ports **62050/62051 to VPS1 only**
    (currently world-open; 62050 is mutual-TLS protected, 62051 xray-API is not). Would add
    host iptables allow-from-204.168.192.40 + drop. Not done (misconfig could drop the node).
-3. **CX32 rescale — NOT needed** (VPS2 idle: load ~0, ~720MB/3.8GB used with everything running).
+2. **CX32 rescale — NOT needed** (VPS2 idle: load ~0, ~720MB/3.8GB used with everything running).
 
 ## Backups (created this run)
 - VPS1 `/root/backups/pre-vps2-20260703_100801/`: `x-ui.db`, `marzban_full.sql`,
