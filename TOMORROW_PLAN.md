@@ -5,6 +5,17 @@ Helsinki (VPS1 204.168.192.40), kept **deliberately separate**. Iran/Turkey clie
 auto-select Germany because it's faster. Verified from Iran (sales, 147ms) and Turkey
 (special users, 86ms); the balancer picks Germany over Helsinki in both._
 
+## Quick reference (resume here)
+- **Servers:** VPS1 Helsinki `204.168.192.40` (both panels + web), VPS2 Germany
+  `178.105.14.66` (2nd VPN + PriceScout), Floating IP `91.98.101.23` (PriceScout egress only).
+- **SSH:** `ssh -i ~/.ssh/id_ed25519 root@<ip>` (key auth works on both).
+- **Panels:** 3X-UI `https://vpn.onyxour.com/panel/` · Marzban `https://r1.onyxour.com:2087/dashboard/`.
+- **Subs:** 3X-UI `https://vpn.onyxour.com/kx9mp2sub/<subId>` · Marzban `https://r1.onyxour.com/sub/<token>`.
+- **Counts (2026-07-03):** 3X-UI = 26 special users (all on reality now) · Marzban = 15 sales users.
+- **Maintenance rule:** add/remove a **3X-UI** user via its panel → then run
+  `bash sync-3xui-mirror.sh` (repo root) to update the Germany mirror. **Marzban** users
+  auto-sync via the node (no action). Never merge the two groups.
+
 ## Final architecture on VPS2 (all side-by-side, isolated)
 ```
 VPS2 178.105.14.66 (Hetzner, Falkenstein, Ubuntu 24.04, BBR+fq)
