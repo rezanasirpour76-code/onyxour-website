@@ -15,6 +15,11 @@
 # if valid; the previous config is backed up. Aborts (mirror untouched) on any
 # validation failure.
 #
+# SOURCE OF TRUTH: the client list is read from VPS1's x-ui DB (clients +
+# client_inbounds), NOT from bin/config.json. config.json is a bootstrap file
+# that 3X-UI does not rewrite when clients are added via its gRPC API, so it
+# goes stale between xray restarts. See the comment in step [1/5].
+#
 # Separation is preserved: only inbounds 2052/2082/2095/8443 are mirrored;
 # the Marzban node (2083/2086/8880) and PriceScout are never touched.
 # ---------------------------------------------------------------------------
@@ -30,11 +35,15 @@ SSHO=(-i "$KEY" -o ConnectTimeout=15 -o StrictHostKeyChecking=accept-new)
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 
 # Pre-flight: warn about reality (inbound-8443) members with a missing/incorrect
-# flow. This fork excludes empty-flow reality members from the runtime config, so
-# they will NOT actually work on reality/Germany even though their sub advertises
-# it. Fix in the panel (set flow = xtls-rprx-vision) then re-run. Non-blocking.
+# flow. A reality member without 'xtls-rprx-vision' will NOT be served properly
+# even though their sub advertises it. Fix in the panel then re-run. Non-blocking.
+#
+# The effective per-inbound flow is client_inbounds.flow_override — verified
+# against the live xray API (`xray api inbounduser`), which agrees with it
+# exactly. clients.flow is a stale/unused default and must NOT be checked here:
+# doing so produced false positives for clients whose override is correct.
 echo "[0/5] Pre-flight: reality users missing the vision flow ..."
-BROKEN=$(ssh "${SSHO[@]}" "$VPS1" "sqlite3 /etc/x-ui/x-ui.db \"SELECT c.email FROM clients c JOIN client_inbounds ci ON ci.client_id=c.id WHERE ci.inbound_id=9 AND (COALESCE(c.flow,'')<>'xtls-rprx-vision' OR COALESCE(ci.flow_override,'')<>'xtls-rprx-vision');\"" 2>/dev/null || true)
+BROKEN=$(ssh "${SSHO[@]}" "$VPS1" "sqlite3 /etc/x-ui/x-ui.db \"SELECT c.email FROM clients c JOIN client_inbounds ci ON ci.client_id=c.id WHERE ci.inbound_id=9 AND c.enable=1 AND COALESCE(ci.flow_override,'')<>'xtls-rprx-vision';\"" 2>/dev/null || true)
 if [ -n "$BROKEN" ]; then
   echo "  ⚠️  These reality users have a missing/incorrect flow and will NOT work on"
   echo "      Germany reality (sub may show it, but the server won't serve them):"
@@ -44,13 +53,72 @@ else
   echo "  OK — all reality users have the vision flow."
 fi
 
-echo "[1/5] Regenerating mirror config from VPS1 runtime config.json ..."
+echo "[1/5] Regenerating mirror config (inbound skeleton from config.json, CLIENTS FROM DB) ..."
 ssh "${SSHO[@]}" "$VPS1" python3 - > "$TMP/config.json" <<'PY'
-import json, sys
-c = json.load(open("/usr/local/x-ui/bin/config.json"))
+import json, sqlite3, sys
+
+# WHY THIS READS THE DB, NOT config.json, FOR THE CLIENT LIST:
+# 3X-UI adds/removes clients on the RUNNING xray via its gRPC API (the 'api'
+# inbound on 127.0.0.1:62789) WITHOUT rewriting bin/config.json. So config.json
+# is only a bootstrap file and goes stale the moment a client is added; it is
+# only rewritten when xray restarts. Building the mirror from it silently
+# omitted every client created since the last restart (they worked on VPS1 but
+# Germany had never heard of them, while this script still reported "in sync").
+#
+# The DB (clients + client_inbounds) is authoritative and matches the live xray
+# API exactly. The per-inbound flow is client_inbounds.flow_override.
+#
+# The inbound SKELETON (port/protocol/streamSettings/sniffing) still comes from
+# config.json on purpose: it is already xray-ready and validated, whereas the
+# DB's stream_settings carries panel-only fields (maxClient/minClient/show/...)
+# that are not part of xray's schema. Inbound-level edits restart xray anyway,
+# which regenerates config.json, so the skeleton does not go stale in practice.
+
 KEEP = {"inbound-2052", "in-2082-tcp", "in-2095-tcp", "inbound-8443"}
-mir = [dict(json.loads(json.dumps(ib)), **{"listen": "0.0.0.0"})
-       for ib in c["inbounds"] if ib.get("tag") in KEEP]
+
+cfg = json.load(open("/usr/local/x-ui/bin/config.json"))
+db = sqlite3.connect("/etc/x-ui/x-ui.db")
+tag_to_id = {tag: iid for iid, tag in db.execute("SELECT id, tag FROM inbounds")}
+
+mir = []
+for ib in cfg["inbounds"]:
+    tag = ib.get("tag")
+    if tag not in KEEP:
+        continue
+    iid = tag_to_id.get(tag)
+    if iid is None:
+        sys.stderr.write("ERROR: no inbound id in DB for tag %s\n" % tag)
+        sys.exit(1)
+
+    clients = []
+    for email, uuid, flow in db.execute(
+            "SELECT c.email, c.uuid, COALESCE(ci.flow_override,'') "
+            "FROM clients c JOIN client_inbounds ci ON ci.client_id = c.id "
+            "WHERE ci.inbound_id = ? AND c.enable = 1 "
+            "ORDER BY c.id", (iid,)):
+        u = {"id": uuid, "email": email}
+        if flow:                       # omit the key entirely when empty (WS inbounds)
+            u["flow"] = flow
+        clients.append(u)
+
+    # Guard: never publish an empty inbound - that would silently cut everyone off.
+    if not clients:
+        sys.stderr.write("ERROR: 0 enabled clients for %s - aborting\n" % tag)
+        sys.exit(1)
+
+    nib = json.loads(json.dumps(ib))   # deep copy of the validated skeleton
+    nib["listen"] = "0.0.0.0"
+    nib["settings"] = {
+        "clients": clients,
+        "decryption": (ib.get("settings") or {}).get("decryption", "none"),
+    }
+    mir.append(nib)
+    sys.stderr.write("      %-15s clients=%d\n" % (tag, len(clients)))
+
+if len(mir) != len(KEEP):
+    sys.stderr.write("ERROR: expected %d inbounds, built %d - aborting\n" % (len(KEEP), len(mir)))
+    sys.exit(1)
+
 out = {"log": {"loglevel": "warning"},
        "inbounds": mir,
        "outbounds": [{"protocol": "freedom", "tag": "direct"},
