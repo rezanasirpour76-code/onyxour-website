@@ -15,6 +15,18 @@
 # if valid; the previous config is backed up. Aborts (mirror untouched) on any
 # validation failure.
 #
+# TWO WAYS TO RUN:
+#   1. From the laptop (default):  bash sync-3xui-mirror.sh
+#   2. On VPS1 itself (the cron):  ON_VPS1=1 SSH_KEY=/root/.ssh/id_backup_vps2 \
+#                                    /root/sync-3xui-mirror.sh
+#      ON_VPS1=1 makes the VPS1-side steps run locally, because VPS1 has no
+#      self-authorized SSH key (and we chose not to add one).
+#
+# IDEMPOTENT: if the generated config is byte-identical to what VPS2 already
+# serves, the script exits before touching anything -- no upload, no restart.
+# This is what makes the */15 cron safe; otherwise it would restart the Germany
+# xray (dropping every user) 96 times a day.
+#
 # SOURCE OF TRUTH: the client list is read from VPS1's x-ui DB (clients +
 # client_inbounds), NOT from bin/config.json. config.json is a bootstrap file
 # that 3X-UI does not rewrite when clients are added via its gRPC API, so it
@@ -32,6 +44,22 @@ MIRROR_DIR="/usr/local/etc/xray-3xui"
 # array keeps the key path intact even if it contains spaces (e.g. Windows)
 SSHO=(-i "$KEY" -o ConnectTimeout=15 -o StrictHostKeyChecking=accept-new)
 
+# ON_VPS1=1 means "we are already running ON VPS1", so the VPS1-side steps run
+# locally instead of over SSH. Needed for the 15-min cron: the cron has to live
+# on VPS1 (it owns the x-ui DB and the key to VPS2), but VPS1 cannot SSH to
+# itself (no self-authorized key, by design - we did not want to widen SSH
+# trust just for this). Default 0 keeps the original laptop behaviour.
+ON_VPS1="${ON_VPS1:-0}"
+
+# Run a command on VPS1: locally when ON_VPS1=1, else over SSH.
+v1() {
+  if [ "$ON_VPS1" = "1" ]; then
+    bash -c "$1"
+  else
+    ssh "${SSHO[@]}" "$VPS1" "$1"
+  fi
+}
+
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 
 # Pre-flight: warn about reality (inbound-8443) members with a missing/incorrect
@@ -43,7 +71,7 @@ TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 # exactly. clients.flow is a stale/unused default and must NOT be checked here:
 # doing so produced false positives for clients whose override is correct.
 echo "[0/5] Pre-flight: reality users missing the vision flow ..."
-BROKEN=$(ssh "${SSHO[@]}" "$VPS1" "sqlite3 /etc/x-ui/x-ui.db \"SELECT c.email FROM clients c JOIN client_inbounds ci ON ci.client_id=c.id WHERE ci.inbound_id=9 AND c.enable=1 AND COALESCE(ci.flow_override,'')<>'xtls-rprx-vision';\"" 2>/dev/null || true)
+BROKEN=$(v1 "sqlite3 /etc/x-ui/x-ui.db \"SELECT c.email FROM clients c JOIN client_inbounds ci ON ci.client_id=c.id WHERE ci.inbound_id=9 AND c.enable=1 AND COALESCE(ci.flow_override,'')<>'xtls-rprx-vision';\"" 2>/dev/null || true)
 if [ -n "$BROKEN" ]; then
   echo "  ⚠️  These reality users have a missing/incorrect flow and will NOT work on"
   echo "      Germany reality (sub may show it, but the server won't serve them):"
@@ -54,7 +82,9 @@ else
 fi
 
 echo "[1/5] Regenerating mirror config (inbound skeleton from config.json, CLIENTS FROM DB) ..."
-ssh "${SSHO[@]}" "$VPS1" python3 - > "$TMP/config.json" <<'PY'
+# Staged to a file (rather than piping a heredoc straight into ssh) so the very
+# same generator runs unchanged in both modes: v1 forwards stdin either way.
+cat > "$TMP/gen.py" <<'PY'
 import json, sqlite3, sys
 
 # WHY THIS READS THE DB, NOT config.json, FOR THE CLIENT LIST:
@@ -127,10 +157,27 @@ out = {"log": {"loglevel": "warning"},
 sys.stdout.write(json.dumps(out, indent=2))
 PY
 
+v1 "python3 -" < "$TMP/gen.py" > "$TMP/config.json"
+
 if [ ! -s "$TMP/config.json" ]; then
   echo "ERROR: generated config is empty — aborting (mirror untouched)." >&2
   exit 1
 fi
+
+# Idempotency gate: only touch VPS2 if the generated config actually differs
+# from what it is already serving. Without this, a */15 cron would run
+# `systemctl restart xray-3xui-mirror` 96 times a day and drop every Germany
+# user's connection each time -- trading a rare security window for constant
+# disruption. Client changes are infrequent, so most runs stop right here.
+echo "[1.5/5] Comparing against the config VPS2 is currently serving ..."
+NEW_HASH="$(sha256sum "$TMP/config.json" | awk '{print $1}')"
+CUR_HASH="$(ssh "${SSHO[@]}" "$VPS2" "sha256sum $MIRROR_DIR/config.json 2>/dev/null | awk '{print \$1}'" || true)"
+if [ -n "$CUR_HASH" ] && [ "$NEW_HASH" = "$CUR_HASH" ]; then
+  echo "  No changes (hash ${NEW_HASH:0:12}) — mirror already current, skipping restart."
+  echo "Done — 3X-UI Germany mirror is in sync (no-op)."
+  exit 0
+fi
+echo "  Change detected — proceeding (current=${CUR_HASH:0:12} new=${NEW_HASH:0:12})."
 
 echo "[2/5] Uploading to VPS2 ..."
 scp "${SSHO[@]}" -q "$TMP/config.json" "$VPS2:/root/mirror-sync-new.json"
