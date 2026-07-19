@@ -55,11 +55,11 @@
 ### لوگو
 ```html
 <span style="font-family:'Playfair Display',serif; direction:ltr">
-  onyx<span style="color:#ff6b00">our</span>
+  onyx<span style="color:#F97316">our</span>
   <span style="font-size:0.6em; color:#787878">VPN</span>
 </span>
 ```
-- حرف اول `o` در `our` به رنگ نارنجی `#ff6b00`
+- حرف اول `o` در `our` به رنگ نارنجی `#F97316`
 - فونت لوگو: Playfair Display
 - همیشه LTR و lowercase لاتین
 
@@ -156,9 +156,9 @@ font-family: 'Playfair Display', Georgia, serif;            /* لوگو */
   --surface2:     #1f1f1f;   /* لایه دوم سطح */
   --border:       #2a2a2a;   /* خطوط جداکننده */
   --border2:      #333333;   /* خطوط پررنگ‌تر */
-  --orange:       #ff6b00;   /* رنگ اصلی برند */
-  --orange2:      #ff8c00;   /* hover state نارنجی */
-  --orange3:      #ffb347;   /* نارنجی روشن */
+  --orange:       #F97316;   /* رنگ اصلی برند */
+  --orange2:      #FB923C;   /* hover state نارنجی */
+  --orange3:      #FED7AA;   /* نارنجی روشن */
   --orange-glow:  rgba(255,107,0,0.18);
   --orange-glow2: rgba(255,107,0,0.08);
   --text:         #f2f2f2;   /* متن اصلی */
@@ -169,7 +169,7 @@ font-family: 'Playfair Display', Georgia, serif;            /* لوگو */
 }
 ```
 
-> **توجه:** CLAUDE.md اصلی (خارج از ریپو) از رنگ بنفش `#6c63ff` استفاده می‌کند — اما رنگ واقعی پروژه **نارنجی** `#ff6b00` است. همیشه از پالت بالا استفاده کنید.
+> **توجه:** CLAUDE.md اصلی (خارج از ریپو) از رنگ بنفش `#6c63ff` استفاده می‌کند — اما رنگ واقعی پروژه **نارنجی** `#F97316` است. همیشه از پالت بالا استفاده کنید.
 
 ### CSS
 - فقط CSS خالص — بدون فریمورک خارجی

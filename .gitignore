@@ -1,0 +1,3 @@
+# Server-script and file backups (don't belong in this repo)
+*.bak_*
+*.backup*.html
