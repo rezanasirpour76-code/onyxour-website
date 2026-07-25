@@ -1,0 +1,16 @@
+{
+  "name": "onyxour-prerender",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Post-render static snapshot of the onyxour.com SPA for crawlers + fast first paint. Run after every SPA redesign.",
+  "scripts": {
+    "snapshot": "node prerender.mjs",
+    "og": "node og-image.mjs",
+    "build": "node prerender.mjs && node og-image.mjs",
+    "verify": "node verify.mjs"
+  },
+  "dependencies": {
+    "puppeteer": "^23.0.0"
+  }
+}
