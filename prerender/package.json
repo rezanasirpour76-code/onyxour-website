@@ -7,7 +7,8 @@
   "scripts": {
     "snapshot": "node prerender.mjs",
     "og": "node og-image.mjs",
-    "build": "node prerender.mjs && node og-image.mjs",
+    "favicon": "node favicon.mjs",
+    "build": "node prerender.mjs && node og-image.mjs && node favicon.mjs",
     "verify": "node verify.mjs"
   },
   "dependencies": {

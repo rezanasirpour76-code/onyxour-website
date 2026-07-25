@@ -19,14 +19,18 @@
 // Output: dist/index.html, dist/robots.txt, dist/sitemap.xml
 // Re-run this after any SPA redesign, then redeploy dist/ to VPS1.
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { createServer } from 'node:http';
 import puppeteer from 'puppeteer';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DIST = join(HERE, 'dist');
-const SITE = 'https://onyxour.com/';
+// Source of truth = the RAW bundler export, versioned in the repo. NOT the live
+// URL: once the snapshot is deployed, fetching live would re-snapshot the
+// snapshot. After an SPA redesign, replace source-live.html with the new export.
+const SRC = join(HERE, 'source-live.html');
 
 const TITLE = 'Onyxour VPN — اینترنت آزاد، امن و پرسرعت';
 const DESC  = 'VPN با IP ثابت اختصاصی، سرعت بالا و پشتیبانی ۲۴/۷. آزمایش رایگان ۲۴ ساعته بدون نیاز به پرداخت.';
@@ -53,6 +57,15 @@ const META = `
   <meta name="twitter:description" content="${DESC}">
   <meta name="twitter:image" content="${OGIMG}">`;
 
+// Standalone favicon files (Google Search reads a real /favicon.ico, not a
+// data: URI). Kept alongside the template's inline SVG icon — browsers merge
+// all rel=icon candidates.
+const FAVICONS = `
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">`;
+
 // Kill session-scoped blob: URLs and @font-face (dead once served static; the
 // real fonts come back with the app after the swap). Fallback font stack still
 // renders Persian text fine in the pre-swap / no-JS view.
@@ -64,14 +77,26 @@ function neutralizeBlobs(s) {
 }
 
 async function main() {
-  console.log('[1/5] Fetching raw bundler HTML from', SITE);
-  const raw = await (await fetch(SITE, { headers: { 'User-Agent': 'onyxour-prerender' } })).text();
+  console.log('[1/5] Reading raw bundler source:', SRC);
+  const raw = readFileSync(SRC, 'utf8');
   console.log('      raw shell bytes:', raw.length);
   if (!/__bundler\/template/.test(raw)) {
-    throw new Error('Raw HTML has no __bundler/template — SPA structure changed. Inspect before proceeding.');
+    throw new Error('source-live.html has no __bundler/template — not a raw bundler export. Inspect before proceeding.');
+  }
+  if (/__prerender-root/.test(raw)) {
+    throw new Error('source-live.html is ALREADY a prerendered snapshot. Replace it with the raw bundler export (e.g. the pre-prerender backup) before building.');
   }
 
-  console.log('[2/5] Rendering live page headlessly...');
+  console.log('[2/5] Rendering source headlessly (served on localhost)...');
+  // Serve the self-contained bundler on localhost so the runtime mounts exactly
+  // as in production (blob: assets are built from its own inlined manifest).
+  const server = createServer((req, res) => {
+    res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+    res.end(raw);
+  });
+  await new Promise(r => server.listen(0, r));
+  const port = server.address().port;
+
   const browser = await puppeteer.launch({
     headless: 'new', args: ['--no-sandbox'],
     executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
@@ -79,7 +104,7 @@ async function main() {
   try {
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 900, deviceScaleFactor: 1 });
-    await page.goto(SITE, { waitUntil: 'networkidle2', timeout: 60000 });
+    await page.goto(`http://localhost:${port}/`, { waitUntil: 'networkidle2', timeout: 60000 });
     // Wait until the React app has mounted (splash gone + real headings present).
     await page.waitForFunction(
       () => !document.getElementById('__bundler_thumbnail') &&
@@ -120,8 +145,8 @@ async function main() {
     // (a) <html> -> <html lang="fa" dir="rtl">
     out = out.replace(/<html(\s[^>]*)?>/i, '<html lang="fa" dir="rtl">');
 
-    // (b) inject SEO/OG meta right after <meta charset...>
-    out = out.replace(/(<meta\s+charset=["'][^"']*["']\s*\/?>)/i, `$1${META}`);
+    // (b) inject SEO/OG meta + favicon links right after <meta charset...>
+    out = out.replace(/(<meta\s+charset=["'][^"']*["']\s*\/?>)/i, `$1${META}${FAVICONS}`);
 
     // (c) neutralize splash body-centering so real content flows normally
     out = out.replace(/body\s*\{\s*background:\s*#0a0a0a;[^}]*\}/i, 'body { background: #0a0a0a; }');
@@ -140,6 +165,13 @@ async function main() {
       throw new Error('Could not locate splash thumbnail div — structure changed. Inspect before proceeding.');
     }
     out = out.replace(thumbRe, prerenderBlock + '\n  ');
+
+    // (e) point the post-swap "re-apply favicon" script at the real file too,
+    // so the standalone favicon is present in the live JS-rendered DOM as well.
+    const beforeIcon = out;
+    out = out.replace(/var ICON="data:image\/svg\+xml,[^"]*";/, 'var ICON="/favicon.ico";');
+    out = out.replace(/l\.setAttribute\('type','image\/svg\+xml'\);/, "l.setAttribute('type','image/x-icon');");
+    console.log('      re-apply favicon script patched:', out !== beforeIcon);
 
     // sanity: bundler machinery must survive untouched
     for (const marker of ['__bundler/manifest', '__bundler/template', 'replaceWith(doc.documentElement)']) {
@@ -160,6 +192,7 @@ async function main() {
     console.log('  telegram links preserved:', snap.tgLinks.join(', '));
   } finally {
     await browser.close();
+    server.close();
   }
 }
 

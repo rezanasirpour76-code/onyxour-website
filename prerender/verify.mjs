@@ -4,7 +4,7 @@
 
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import puppeteer from 'puppeteer';
 
@@ -25,10 +25,19 @@ const staticChecks = {
   'telegram bot link':       /t\.me\/onyxour_vpn_bot/i.test(html),
   // only LIVE blob refs matter (CSS url(blob:) / src|href="blob:"); the bundler
   // runtime source legitimately mentions the word "blob:" in a code comment.
+  'favicon.ico link':        /<link[^>]+rel="icon"[^>]+href="\/favicon\.ico"/i.test(html),
+  'favicon 32 png link':     /<link[^>]+href="\/favicon-32x32\.png"/i.test(html),
+  'apple-touch-icon link':   /<link[^>]+rel="apple-touch-icon"[^>]+href="\/apple-touch-icon\.png"/i.test(html),
   'no live blob: ref':       !/(url\(\s*["']?blob:|(?:src|href)=["']blob:)/i.test(html),
   'snapshot #dc-root == 1':  (html.match(/id="dc-root"/g) || []).length === 1,
   'bundler machinery intact': /__bundler\/template/.test(html) && /replaceWith\(doc\.documentElement\)/.test(html),
 };
+
+// favicon files must exist and be non-trivial
+for (const f of ['favicon.ico', 'favicon-32x32.png', 'favicon-16x16.png', 'apple-touch-icon.png']) {
+  const p = join(DIST, f);
+  staticChecks[`file ${f}`] = existsSync(p) && statSync(p).size > 100;
+}
 
 console.log('\n== STATIC (no-JS crawler) checks ==');
 let ok = true;
