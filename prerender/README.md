@@ -21,7 +21,8 @@ already-prerendered file (`__prerender-root`).
 
 ## What this does
 
-`prerender.mjs` serves `source-live.html` on localhost, renders it headlessly,
+**`prerender.mjs` implements the Route A SPA snapshot prerender**, taking
+`source-live.html` as its input. It serves `source-live.html` on localhost, renders it headlessly,
 extracts the real `#dc-root` DOM + styles, neutralizes session-scoped
 `blob:`/`@font-face`, and grafts that static styled snapshot into the raw shell
 — plus `<html lang="fa" dir="rtl">`, SEO/OG/Twitter/canonical meta, and
