@@ -26,7 +26,7 @@
       --text:       #FFFFFF;
       --text2:      #E8E8EA;
       --muted:      #8A8A96;
-      --muted2:     #5A5A66;
+      --muted2:     #86868F;
       --green:      #22C55E;
       --radius:     14px;
       --radius-lg:  20px;
@@ -61,6 +61,10 @@
     p { color: var(--text2); }
     a { color: inherit; text-decoration: none; }
 
+    /* Keyboard focus — visible ring on every interactive element */
+    :focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; border-radius: 4px; }
+    :focus:not(:focus-visible) { outline: none; }
+
     /* ── UTILS ── */
     .container { max-width: 1140px; margin: 0 auto; padding: 0 5%; }
     .tag {
@@ -77,7 +81,8 @@
       display: inline-flex; align-items: center; gap: 8px;
       font-family: inherit; font-size: 1rem; font-weight: 700;
       padding: 0.8rem 1.8rem; border-radius: var(--radius);
-      border: none; cursor: pointer; transition: all 0.2s ease;
+      border: none; cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
       text-decoration: none; white-space: nowrap;
     }
     .btn-primary {
@@ -111,7 +116,7 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
-      transition: all 0.3s ease;
+      transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     }
     nav.scrolled {
       background: rgba(11,11,13,0.96);
@@ -148,7 +153,7 @@
     .lang-toggle button {
       background: none; border: none; cursor: pointer;
       padding: 4px 10px; font-size: 0.75rem; font-weight: 600;
-      color: var(--muted); transition: all 0.2s; font-family: inherit;
+      color: var(--muted); transition: background 0.2s, color 0.2s; font-family: inherit;
     }
     .lang-toggle button.active { background: var(--orange); color: #000; }
 
@@ -156,7 +161,7 @@
       background: var(--orange); color: #000 !important;
       font-weight: 700; padding: 0.45rem 1.1rem;
       border-radius: 8px; font-size: 0.88rem;
-      transition: all 0.2s;
+      transition: background 0.2s, transform 0.2s;
     }
     .nav-cta:hover { background: var(--orange2); transform: translateY(-1px); }
 
@@ -353,7 +358,7 @@
       background: none; border: none; cursor: pointer;
       font-family: inherit; font-size: 0.88rem; font-weight: 600;
       color: var(--muted); padding: 0.5rem 1.4rem;
-      border-radius: 9px; transition: all 0.2s;
+      border-radius: 9px; transition: background 0.2s, color 0.2s;
     }
     .pricing-toggle button.active { background: var(--orange); color: #000; }
 
@@ -397,13 +402,13 @@
 
     .price-name { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; }
     .price-volume { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.25rem; direction: ltr; }
-    .price-usd {
-      font-size: 2.5rem; font-weight: 900; color: var(--text);
-      direction: ltr; display: flex; align-items: flex-start; gap: 2px;
-      line-height: 1; margin-bottom: 0.3rem;
+    .price-main {
+      font-weight: 900; color: var(--text);
+      line-height: 1.1; margin-bottom: 1.5rem;
+      display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap;
     }
-    .price-usd sup { font-size: 1rem; margin-top: 6px; color: var(--muted); }
-    .price-toman { font-size: 0.82rem; color: var(--muted); direction: ltr; margin-bottom: 1.5rem; }
+    .price-main .amount { font-size: 2.2rem; letter-spacing: -0.02em; }
+    .price-main .price-unit { font-size: 0.95rem; font-weight: 600; color: var(--muted); }
 
     .price-features { list-style: none; margin-bottom: 1.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
     .price-features li { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: var(--text2); }
@@ -426,17 +431,14 @@
     .tutorial-section { background: var(--bg2); }
 
     .sublink-explainer {
-      background: var(--card);
+      background: linear-gradient(120deg, var(--orange-dim), transparent 60%), var(--card);
       border: 1px solid var(--border);
-      border-right: 3px solid var(--orange);
       border-radius: var(--radius);
       padding: 1.25rem 1.5rem;
       margin-bottom: 2.5rem;
     }
     .sublink-explainer h3 { font-size: 0.95rem; color: var(--orange); margin-bottom: 0.4rem; }
     .sublink-explainer p { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
-
-    [data-lang="en"] .sublink-explainer { border-right: 1px solid var(--border); border-left: 3px solid var(--orange); }
 
     .tab-bar {
       display: flex; gap: 0.5rem;
@@ -448,7 +450,7 @@
       background: none; border: none; cursor: pointer;
       font-family: inherit; font-size: 0.88rem; font-weight: 600;
       color: var(--muted); padding: 0.5rem 1.2rem;
-      border-radius: 9px; transition: all 0.2s;
+      border-radius: 9px; transition: background 0.2s, color 0.2s, border-color 0.2s;
       display: flex; align-items: center; gap: 6px;
     }
     .tab-btn.active { background: var(--card2); color: var(--text); border: 1px solid var(--border2); }
@@ -487,7 +489,7 @@
       border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
       margin-bottom: 0.75rem;
-      color: var(--muted2); font-size: 0.75rem;
+      color: var(--muted); font-size: 2rem;
       text-align: center;
     }
     .os-step h4 { font-size: 0.88rem; color: var(--text); margin-bottom: 0.25rem; }
@@ -541,6 +543,9 @@
     .testi-name { font-size: 0.85rem; font-weight: 700; color: var(--text); }
     .testi-meta { font-size: 0.75rem; color: var(--muted); }
 
+    .trust-verify { text-align: center; margin-top: 2.5rem; }
+    .trust-verify p { color: var(--muted); margin-bottom: 1rem; }
+
     /* ════════════════════════════════
        FAQ
     ════════════════════════════════ */
@@ -565,9 +570,10 @@
     .faq-q:hover { color: var(--orange); }
     .faq-arrow { font-size: 0.9rem; transition: transform 0.3s; flex-shrink: 0; color: var(--muted); }
     .faq-item.open .faq-arrow { transform: rotate(180deg); color: var(--orange); }
-    .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
-    .faq-item.open .faq-a { max-height: 400px; }
-    .faq-a-inner { padding: 0 1.25rem 1.1rem; font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+    .faq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.35s ease; }
+    .faq-item.open .faq-a { grid-template-rows: 1fr; }
+    .faq-a-inner { overflow: hidden; min-height: 0; padding: 0 1.25rem; font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+    .faq-a-inner p { padding-bottom: 1.1rem; }
 
     /* ════════════════════════════════
        CTA BANNER
@@ -618,12 +624,12 @@
 
     .social-links { display: flex; gap: 0.75rem; }
     .social-link {
-      width: 36px; height: 36px;
+      width: 42px; height: 42px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; transition: all 0.2s; color: var(--muted);
+      font-size: 1.1rem; transition: background 0.2s, border-color 0.2s, color 0.2s; color: var(--muted);
     }
     .social-link:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
 
@@ -638,7 +644,7 @@
       color: #000; font-weight: 700; font-size: 0.88rem;
       padding: 0.7rem 1.2rem; border-radius: 50px;
       box-shadow: 0 4px 24px rgba(249,115,22,0.4);
-      transition: all 0.2s;
+      transition: opacity 0.3s, transform 0.2s, background 0.2s, box-shadow 0.2s;
       opacity: 0; pointer-events: none; transform: translateY(10px);
     }
     [data-lang="en"] .fab { left: auto; right: 1.5rem; }
@@ -671,6 +677,32 @@
       .trust-row { gap: 0.75rem; }
     }
 
+    /* Mobile language switch (inside the hamburger menu) */
+    .mobile-lang { display: flex; gap: 0; align-self: flex-start; margin-bottom: 0.75rem; }
+    .mobile-lang button {
+      background: var(--card2); border: 1px solid var(--border2);
+      color: var(--muted); cursor: pointer; font-family: inherit;
+      font-size: 0.85rem; font-weight: 700; padding: 0.5rem 1.1rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .mobile-lang button:first-child { border-radius: 8px 0 0 8px; }
+    .mobile-lang button:last-child { border-radius: 0 8px 8px 0; border-right: none; }
+    [dir="rtl"] .mobile-lang button:first-child { border-radius: 0 8px 8px 0; }
+    [dir="rtl"] .mobile-lang button:last-child { border-radius: 8px 0 0 8px; }
+    .mobile-lang button.active { background: var(--orange); color: #000; border-color: var(--orange); }
+
+    /* Respect users who prefer reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+      .hero-orb { animation: none !important; }
+      .reveal { opacity: 1 !important; transform: none !important; }
+    }
+
   </style>
 </head>
 <body>
@@ -690,8 +722,8 @@
 
   <div class="nav-right">
     <div class="lang-toggle">
-      <button id="langFa" class="active" onclick="setLang('fa')">FA</button>
-      <button id="langEn" onclick="setLang('en')">EN</button>
+      <button id="langFa" class="active" data-lang-btn="fa" onclick="setLang('fa')">FA</button>
+      <button id="langEn" data-lang-btn="en" onclick="setLang('en')">EN</button>
     </div>
     <a href="https://t.me/onyxour_vpn_bot" target="_blank" rel="noopener" class="nav-cta">
       <span class="fa">آزمایش رایگان</span>
@@ -705,6 +737,10 @@
 </nav>
 
 <div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-lang">
+    <button data-lang-btn="fa" class="active" onclick="setLang('fa')">FA</button>
+    <button data-lang-btn="en" onclick="setLang('en')">EN</button>
+  </div>
   <a href="#features" onclick="closeMobileMenu()"><span class="fa">ویژگی‌ها</span><span class="en">Features</span></a>
   <a href="#pricing" onclick="closeMobileMenu()"><span class="fa">قیمت‌ها</span><span class="en">Pricing</span></a>
   <a href="#tutorial" onclick="closeMobileMenu()"><span class="fa">آموزش نصب</span><span class="en">Tutorial</span></a>
@@ -720,16 +756,16 @@
   <div class="hero-orb"></div>
   <div class="hero-inner">
     <div class="hero-card">
-      <div class="tag fa">✦ سرویس VPN حرفه‌ای</div>
-      <div class="tag en">✦ Professional VPN Service</div>
+      <div class="tag fa">✦ چرخش خودکار سرور هنگام فیلترینگ</div>
+      <div class="tag en">✦ Auto server rotation when blocked</div>
 
       <h1>
-        <span class="fa">اینترنت آزاد با<br><span class="hl">IP ثابت اختصاصی</span></span>
-        <span class="en">Free Internet with<br><span class="hl">Fixed Dedicated IP</span></span>
+        <span class="fa">وقتی سرورها فیلتر می‌شوند،<br><span class="hl">اتصال تو خودکار برمی‌گردد</span></span>
+        <span class="en">When servers get blocked,<br><span class="hl">you stay connected</span></span>
       </h1>
 
-      <p class="sub fa">سرعت بالا، پایداری کامل و IP ثابت اختصاصی — VPN ایرانی که واقعاً کار می‌کند.</p>
-      <p class="sub en">High speed, rock-solid stability, and your own fixed IP — the Iranian VPN that actually works.</p>
+      <p class="sub fa">چرخش خودکار سرور + IP ثابت اختصاصی — VPN ایرانی که در ساعت‌های فیلترینگ هم قطع نمی‌شود.</p>
+      <p class="sub en">Automatic server rotation plus your own fixed dedicated IP — the Iranian VPN that keeps working when filtering hits hardest.</p>
 
       <div class="hero-cta-row">
         <a href="https://t.me/onyxour_vpn_bot" target="_blank" rel="noopener" class="btn btn-primary btn-lg">
@@ -869,8 +905,8 @@
         <div class="feat-icon">🔒</div>
         <div>
           <h3><span class="fa">رمزنگاری قوی</span><span class="en">Strong Encryption</span></h3>
-          <p class="fa">رمزنگاری نظامی‌درجه AES-256 با پروتکل‌های مدرن. هیچ فعالیتی لاگ نمی‌شود.</p>
-          <p class="en">Military-grade AES-256 encryption with modern protocols. Zero logs, zero traces.</p>
+          <p class="fa">رمزنگاری AES-256 با پروتکل‌های مدرن (VLESS/VMess). هیچ فعالیتی لاگ نمی‌شود.</p>
+          <p class="en">AES-256 encryption with modern protocols (VLESS/VMess). No activity is logged.</p>
         </div>
       </div>
       <div class="feat-card reveal">
@@ -906,10 +942,10 @@
     </div>
 
     <div class="pricing-toggle reveal" id="planToggle">
-      <button class="active" onclick="setPlan('personal')">
+      <button class="active" aria-pressed="true" onclick="setPlan('personal')">
         <span class="fa">پلن شخصی</span><span class="en">Personal</span>
       </button>
-      <button onclick="setPlan('family')">
+      <button aria-pressed="false" onclick="setPlan('family')">
         <span class="fa">پلن خانوادگی</span><span class="en">Family</span>
       </button>
     </div>
@@ -920,9 +956,8 @@
         <div class="price-name fa">پایه</div>
         <div class="price-name en">Starter</div>
         <div class="price-volume" dir="ltr">30 GB</div>
-        <div class="price-usd" dir="ltr"><sup>$</sup>5<span style="font-size:1.2rem;color:var(--muted)">.99</span></div>
-        <div class="price-toman fa" dir="rtl">≈ ۵۰۵,۰۰۰ تومان</div>
-        <div class="price-toman en" dir="ltr">≈ 505,000 Toman</div>
+        <div class="price-main fa" dir="rtl"><span class="amount">۵۰۵,۰۰۰</span> <span class="price-unit">تومان</span></div>
+        <div class="price-main en" dir="ltr"><span class="amount">505,000</span> <span class="price-unit">Toman</span></div>
         <ul class="price-features">
           <li><span class="fa">۳۰ گیگابایت حجم</span><span class="en">30 GB data</span></li>
           <li><span class="fa">IP ثابت اختصاصی</span><span class="en">Dedicated fixed IP</span></li>
@@ -941,9 +976,8 @@
         <div class="price-name fa">استاندارد</div>
         <div class="price-name en">Standard</div>
         <div class="price-volume" dir="ltr">50 GB</div>
-        <div class="price-usd" dir="ltr"><sup>$</sup>9<span style="font-size:1.2rem;color:var(--muted)">.99</span></div>
-        <div class="price-toman fa" dir="rtl">≈ ۷۸۵,۰۰۰ تومان</div>
-        <div class="price-toman en" dir="ltr">≈ 785,000 Toman</div>
+        <div class="price-main fa" dir="rtl"><span class="amount">۷۸۵,۰۰۰</span> <span class="price-unit">تومان</span></div>
+        <div class="price-main en" dir="ltr"><span class="amount">785,000</span> <span class="price-unit">Toman</span></div>
         <ul class="price-features">
           <li><span class="fa">۵۰ گیگابایت حجم</span><span class="en">50 GB data</span></li>
           <li><span class="fa">IP ثابت اختصاصی</span><span class="en">Dedicated fixed IP</span></li>
@@ -960,10 +994,9 @@
       <div class="price-card" data-plan="personal">
         <div class="price-name fa">پرو</div>
         <div class="price-name en">Pro</div>
-        <div class="price-volume" dir="ltr">100 GB — <span style="color:var(--orange)">Best Value</span></div>
-        <div class="price-usd" dir="ltr"><sup>$</sup>18<span style="font-size:1.2rem;color:var(--muted)">.99</span></div>
-        <div class="price-toman fa" dir="rtl">≈ ۱,۵۱۴,۰۰۰ تومان</div>
-        <div class="price-toman en" dir="ltr">≈ 1,514,000 Toman</div>
+        <div class="price-volume" dir="ltr">100 GB — <span style="color:var(--orange)"><span class="fa">بهترین ارزش</span><span class="en">Best Value</span></span></div>
+        <div class="price-main fa" dir="rtl"><span class="amount">۱,۵۱۴,۰۰۰</span> <span class="price-unit">تومان</span></div>
+        <div class="price-main en" dir="ltr"><span class="amount">1,514,000</span> <span class="price-unit">Toman</span></div>
         <ul class="price-features">
           <li><span class="fa">۱۰۰ گیگابایت حجم</span><span class="en">100 GB data</span></li>
           <li><span class="fa">IP ثابت اختصاصی</span><span class="en">Dedicated fixed IP</span></li>
@@ -983,10 +1016,9 @@
       <div class="price-card" data-plan="family">
         <div class="price-name fa">خانوادگی پایه</div>
         <div class="price-name en">Family Starter</div>
-        <div class="price-volume" dir="ltr">30 GB — <span style="color:var(--muted)">Multi-user</span></div>
-        <div class="price-usd" dir="ltr"><sup>$</sup>7<span style="font-size:1.2rem;color:var(--muted)">.29</span></div>
-        <div class="price-toman fa" dir="rtl">≈ ۶۰۶,۰۰۰ تومان</div>
-        <div class="price-toman en" dir="ltr">≈ 606,000 Toman</div>
+        <div class="price-volume" dir="ltr">30 GB — <span style="color:var(--muted)"><span class="fa">چند کاربره</span><span class="en">Multi-user</span></span></div>
+        <div class="price-main fa" dir="rtl"><span class="amount">۶۰۶,۰۰۰</span> <span class="price-unit">تومان</span></div>
+        <div class="price-main en" dir="ltr"><span class="amount">606,000</span> <span class="price-unit">Toman</span></div>
         <ul class="price-features">
           <li><span class="fa">۳۰ گیگابایت مشترک</span><span class="en">30 GB shared quota</span></li>
           <li><span class="fa">تا ۵ کاربر</span><span class="en">Up to 5 users</span></li>
@@ -1004,10 +1036,9 @@
         <div class="popular-badge en">⭐ Most Popular</div>
         <div class="price-name fa">خانوادگی استاندارد</div>
         <div class="price-name en">Family Standard</div>
-        <div class="price-volume" dir="ltr">50 GB — <span style="color:var(--muted)">Multi-user</span></div>
-        <div class="price-usd" dir="ltr"><sup>$</sup>11<span style="font-size:1.2rem;color:var(--muted)">.99</span></div>
-        <div class="price-toman fa" dir="rtl">≈ ۹۴۲,۰۰۰ تومان</div>
-        <div class="price-toman en" dir="ltr">≈ 942,000 Toman</div>
+        <div class="price-volume" dir="ltr">50 GB — <span style="color:var(--muted)"><span class="fa">چند کاربره</span><span class="en">Multi-user</span></span></div>
+        <div class="price-main fa" dir="rtl"><span class="amount">۹۴۲,۰۰۰</span> <span class="price-unit">تومان</span></div>
+        <div class="price-main en" dir="ltr"><span class="amount">942,000</span> <span class="price-unit">Toman</span></div>
         <ul class="price-features">
           <li><span class="fa">۵۰ گیگابایت مشترک</span><span class="en">50 GB shared quota</span></li>
           <li><span class="fa">تا ۵ کاربر</span><span class="en">Up to 5 users</span></li>
@@ -1024,10 +1055,9 @@
       <div class="price-card" data-plan="family">
         <div class="price-name fa">خانوادگی پرو</div>
         <div class="price-name en">Family Pro</div>
-        <div class="price-volume" dir="ltr">100 GB — <span style="color:var(--orange)">Best Value</span></div>
-        <div class="price-usd" dir="ltr"><sup>$</sup>22<span style="font-size:1.2rem;color:var(--muted)">.99</span></div>
-        <div class="price-toman fa" dir="rtl">≈ ۱,۸۱۷,۰۰۰ تومان</div>
-        <div class="price-toman en" dir="ltr">≈ 1,817,000 Toman</div>
+        <div class="price-volume" dir="ltr">100 GB — <span style="color:var(--orange)"><span class="fa">بهترین ارزش</span><span class="en">Best Value</span></span></div>
+        <div class="price-main fa" dir="rtl"><span class="amount">۱,۸۱۷,۰۰۰</span> <span class="price-unit">تومان</span></div>
+        <div class="price-main en" dir="ltr"><span class="amount">1,817,000</span> <span class="price-unit">Toman</span></div>
         <ul class="price-features">
           <li><span class="fa">۱۰۰ گیگابایت مشترک</span><span class="en">100 GB shared quota</span></li>
           <li><span class="fa">تا ۵ کاربر</span><span class="en">Up to 5 users</span></li>
@@ -1067,17 +1097,17 @@
       <p class="en">A subscription link is a unique URL that contains all your connection configs. Import it once into your app and all servers sync automatically — no manual setup. When our servers update or rotate, your app updates itself.</p>
     </div>
 
-    <div class="tab-bar reveal" id="tutorialTabs">
-      <button class="tab-btn active" onclick="setTab('android')">
+    <div class="tab-bar reveal" id="tutorialTabs" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" onclick="setTab('android', this)">
         🤖 <span class="fa">اندروید</span><span class="en">Android</span>
       </button>
-      <button class="tab-btn" onclick="setTab('ios')">
+      <button class="tab-btn" role="tab" aria-selected="false" onclick="setTab('ios', this)">
         🍎 <span class="fa">آیفون/آیپد</span><span class="en">iPhone/iPad</span>
       </button>
-      <button class="tab-btn" onclick="setTab('windows')">
+      <button class="tab-btn" role="tab" aria-selected="false" onclick="setTab('windows', this)">
         🪟 <span class="fa">ویندوز</span><span class="en">Windows</span>
       </button>
-      <button class="tab-btn" onclick="setTab('macos')">
+      <button class="tab-btn" role="tab" aria-selected="false" onclick="setTab('macos', this)">
         🍏 <span class="fa">مک</span><span class="en">macOS</span>
       </button>
     </div>
@@ -1087,7 +1117,7 @@
       <div class="os-steps">
         <div class="os-step reveal">
           <div class="os-step-num">1</div>
-          <div class="os-step-img">📱 دانلود اپ<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">📱</div>
           <h4 class="fa">دانلود Hiddify یا v2rayNG</h4>
           <h4 class="en">Download Hiddify or v2rayNG</h4>
           <p class="fa">از Google Play یا لینک مستقیم APK اپ را دانلود کنید. Hiddify برای مبتدیان توصیه می‌شود.</p>
@@ -1095,7 +1125,7 @@
         </div>
         <div class="os-step reveal">
           <div class="os-step-num">2</div>
-          <div class="os-step-img">🤖 لینک از ربات<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">🤖</div>
           <h4 class="fa">لینک اشتراک را از ربات دریافت کنید</h4>
           <h4 class="en">Get subscription link from bot</h4>
           <p class="fa">در ربات تلگرام @onyxour_vpn_bot لینک اشتراک خود را دریافت کنید.</p>
@@ -1103,7 +1133,7 @@
         </div>
         <div class="os-step reveal">
           <div class="os-step-num">3</div>
-          <div class="os-step-img">📋 وارد کردن لینک<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">📋</div>
           <h4 class="fa">لینک را در اپ وارد کنید</h4>
           <h4 class="en">Import the link into the app</h4>
           <p class="fa">در Hiddify: منوی «+» ← «اضافه از URL». در v2rayNG: «+» ← «Subscribe» ← وارد کردن URL.</p>
@@ -1111,7 +1141,7 @@
         </div>
         <div class="os-step reveal">
           <div class="os-step-num">4</div>
-          <div class="os-step-img">✅ اتصال برقرار<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">✅</div>
           <h4 class="fa">وصل شوید</h4>
           <h4 class="en">Connect</h4>
           <p class="fa">یک سرور انتخاب کنید و دکمه Connect را بزنید. آیکن VPN در نوار وضعیت ظاهر می‌شود.</p>
@@ -1135,7 +1165,7 @@
       <div class="os-steps">
         <div class="os-step reveal">
           <div class="os-step-num">1</div>
-          <div class="os-step-img">🍎 App Store<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">🍎</div>
           <h4 class="fa">دانلود Hiddify یا Streisand</h4>
           <h4 class="en">Download Hiddify or Streisand</h4>
           <p class="fa">از App Store اپ را دانلود کنید. ممکن است به اپل‌آیدی غیرایرانی نیاز داشته باشید.</p>
@@ -1143,7 +1173,7 @@
         </div>
         <div class="os-step reveal">
           <div class="os-step-num">2</div>
-          <div class="os-step-img">📬 ربات تلگرام<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">📬</div>
           <h4 class="fa">لینک اشتراک دریافت کنید</h4>
           <h4 class="en">Get your subscription link</h4>
           <p class="fa">در ربات @onyxour_vpn_bot لینک اشتراک خود را کپی کنید.</p>
@@ -1151,7 +1181,7 @@
         </div>
         <div class="os-step reveal">
           <div class="os-step-num">3</div>
-          <div class="os-step-img">📥 وارد کردن<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">📥</div>
           <h4 class="fa">لینک را وارد کنید</h4>
           <h4 class="en">Import the link</h4>
           <p class="fa">در Hiddify: «+» ← «اضافه از Clipboard». در Streisand: «New Config» ← «URL».</p>
@@ -1159,7 +1189,7 @@
         </div>
         <div class="os-step reveal">
           <div class="os-step-num">4</div>
-          <div class="os-step-img">🔐 اتصال<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">🔐</div>
           <h4 class="fa">وصل شوید</h4>
           <h4 class="en">Connect</h4>
           <p class="fa">سرور مورد نظر را انتخاب و دکمه Connect را بزنید. به VPN اجازه دسترسی بدهید.</p>
@@ -1181,7 +1211,7 @@
       <div class="os-steps">
         <div class="os-step reveal">
           <div class="os-step-num">1</div>
-          <div class="os-step-img">💻 دانلود<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">💻</div>
           <h4 class="fa">دانلود v2rayN یا Hiddify</h4>
           <h4 class="en">Download v2rayN or Hiddify</h4>
           <p class="fa">آخرین نسخه v2rayN یا Hiddify for Windows را از GitHub دانلود کنید.</p>
@@ -1189,7 +1219,7 @@
         </div>
         <div class="os-step reveal">
           <div class="os-step-num">2</div>
-          <div class="os-step-img">📋 کپی لینک<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">📋</div>
           <h4 class="fa">لینک اشتراک کپی کنید</h4>
           <h4 class="en">Copy subscription link</h4>
           <p class="fa">از ربات @onyxour_vpn_bot لینک اشتراک خود را دریافت و کپی کنید.</p>
@@ -1197,7 +1227,7 @@
         </div>
         <div class="os-step reveal">
           <div class="os-step-num">3</div>
-          <div class="os-step-img">⚙️ تنظیمات<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">⚙️</div>
           <h4 class="fa">اشتراک را اضافه کنید</h4>
           <h4 class="en">Add subscription</h4>
           <p class="fa">در v2rayN: Subscriptions ← Add. در Hiddify: «+» ← URL. لینک را paste کنید.</p>
@@ -1205,7 +1235,7 @@
         </div>
         <div class="os-step reveal">
           <div class="os-step-num">4</div>
-          <div class="os-step-img">✅ اتصال<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">✅</div>
           <h4 class="fa">وصل شوید</h4>
           <h4 class="en">Connect</h4>
           <p class="fa">یک سرور از لیست انتخاب کنید و «System Proxy» را فعال کنید. آیکن سینی سیستم سبز می‌شود.</p>
@@ -1227,7 +1257,7 @@
       <div class="os-steps">
         <div class="os-step reveal">
           <div class="os-step-num">1</div>
-          <div class="os-step-img">🍏 دانلود<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">🍏</div>
           <h4 class="fa">دانلود Hiddify for Mac</h4>
           <h4 class="en">Download Hiddify for Mac</h4>
           <p class="fa">Hiddify for macOS را از صفحه releases در GitHub دانلود کنید (.dmg).</p>
@@ -1235,7 +1265,7 @@
         </div>
         <div class="os-step reveal">
           <div class="os-step-num">2</div>
-          <div class="os-step-img">📬 لینک ربات<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">📬</div>
           <h4 class="fa">لینک اشتراک دریافت کنید</h4>
           <h4 class="en">Get your subscription link</h4>
           <p class="fa">در ربات @onyxour_vpn_bot لینک اشتراک خود را کپی کنید.</p>
@@ -1243,7 +1273,7 @@
         </div>
         <div class="os-step reveal">
           <div class="os-step-num">3</div>
-          <div class="os-step-img">📥 وارد کردن<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">📥</div>
           <h4 class="fa">لینک را در Hiddify وارد کنید</h4>
           <h4 class="en">Import link into Hiddify</h4>
           <p class="fa">در Hiddify: روی «+» کلیک کنید ← «Add Profile from URL» ← لینک را paste کنید.</p>
@@ -1251,7 +1281,7 @@
         </div>
         <div class="os-step reveal">
           <div class="os-step-num">4</div>
-          <div class="os-step-img">🔐 اتصال<br><small style="font-size:0.68rem">Screenshot placeholder</small></div>
+          <div class="os-step-img" aria-hidden="true">🔐</div>
           <h4 class="fa">وصل شوید</h4>
           <h4 class="en">Connect</h4>
           <p class="fa">بهترین سرور انتخاب می‌شود و دکمه Connect را بزنید. آیکن مک‌بار نشان می‌دهد که VPN فعال است.</p>
@@ -1323,7 +1353,7 @@
     <div class="faq-list reveal">
 
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">
           <span class="fa">IP ثابت یعنی چی و چرا مهمه؟</span>
           <span class="en">What is a fixed IP and why does it matter?</span>
           <span class="faq-arrow">▾</span>
@@ -1335,7 +1365,7 @@
       </div>
 
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">
           <span class="fa">آیا فعالیت‌های من لاگ می‌شود؟</span>
           <span class="en">Do you log my activity?</span>
           <span class="faq-arrow">▾</span>
@@ -1347,7 +1377,7 @@
       </div>
 
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">
           <span class="fa">VPN رایگان بگیرم بهتر نیست؟</span>
           <span class="en">Why not just use a free VPN?</span>
           <span class="faq-arrow">▾</span>
@@ -1359,7 +1389,7 @@
       </div>
 
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">
           <span class="fa">پلن خانوادگی چطور کار می‌کند؟</span>
           <span class="en">How does the family plan work?</span>
           <span class="faq-arrow">▾</span>
@@ -1371,7 +1401,7 @@
       </div>
 
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">
           <span class="fa">اگر VPN فیلتر شد چی می‌شود؟</span>
           <span class="en">What happens if the VPN gets blocked?</span>
           <span class="faq-arrow">▾</span>
@@ -1383,7 +1413,7 @@
       </div>
 
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" aria-expanded="false" onclick="toggleFaq(this)">
           <span class="fa">روش‌های پرداخت چیست؟</span>
           <span class="en">What payment methods do you accept?</span>
           <span class="faq-arrow">▾</span>
@@ -1452,15 +1482,15 @@
         <h4 class="fa">شبکه‌های اجتماعی</h4>
         <h4 class="en">Social</h4>
         <div class="social-links">
-          <a href="https://t.me/onyxour_vpn" target="_blank" rel="noopener" class="social-link" title="Telegram Channel">✈</a>
-          <a href="https://t.me/onyxour_vpn_bot" target="_blank" rel="noopener" class="social-link" title="Telegram Bot">🤖</a>
-          <a href="https://t.me/r_nsr_0" target="_blank" rel="noopener" class="social-link" title="Support">💬</a>
+          <a href="https://t.me/onyxour_vpn" target="_blank" rel="noopener" class="social-link" title="Telegram Channel" aria-label="Telegram Channel">✈</a>
+          <a href="https://t.me/onyxour_vpn_bot" target="_blank" rel="noopener" class="social-link" title="Telegram Bot" aria-label="Telegram Bot">🤖</a>
+          <a href="https://t.me/r_nsr_0" target="_blank" rel="noopener" class="social-link" title="Support" aria-label="Support">💬</a>
         </div>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <p>© 2025 Onyxour VPN. <span class="fa">تمام حقوق محفوظ است.</span><span class="en">All rights reserved.</span></p>
+      <p>© <span id="year">2026</span> Onyxour VPN. <span class="fa">تمام حقوق محفوظ است.</span><span class="en">All rights reserved.</span></p>
       <p class="fa">ساخته شده با ❤️ برای کاربران ایرانی</p>
       <p class="en">Built with ❤️ for Iranian users</p>
     </div>
@@ -1478,8 +1508,8 @@
   // ── Language Toggle ──
   function setLang(lang) {
     document.documentElement.setAttribute('data-lang', lang);
-    document.getElementById('langFa').classList.toggle('active', lang === 'fa');
-    document.getElementById('langEn').classList.toggle('active', lang === 'en');
+    document.querySelectorAll('[data-lang-btn]').forEach(b =>
+      b.classList.toggle('active', b.dataset.langBtn === lang));
     document.documentElement.setAttribute('lang', lang === 'fa' ? 'fa' : 'en');
     document.documentElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
     localStorage.setItem('onyxour-lang', lang);
@@ -1516,7 +1546,11 @@
   // ── Pricing Toggle ──
   function setPlan(plan) {
     const btns = document.querySelectorAll('#planToggle button');
-    btns.forEach((b, i) => b.classList.toggle('active', (i === 0 && plan === 'personal') || (i === 1 && plan === 'family')));
+    btns.forEach((b, i) => {
+      const on = (i === 0 && plan === 'personal') || (i === 1 && plan === 'family');
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on);
+    });
 
     const personalGrid = document.querySelector('.pricing-grid.reveal');
     const familyGrid = document.getElementById('familyGrid');
@@ -1531,10 +1565,13 @@
   }
 
   // ── Tutorial Tabs ──
-  function setTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  function setTab(tab, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    if (btn) { btn.classList.add('active'); btn.setAttribute('aria-selected', 'true'); }
     document.getElementById('tab-' + tab).classList.add('active');
   }
 
@@ -1542,8 +1579,11 @@
   function toggleFaq(btn) {
     const item = btn.closest('.faq-item');
     const wasOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
-    if (!wasOpen) item.classList.add('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => {
+      i.classList.remove('open');
+      const q = i.querySelector('.faq-q'); if (q) q.setAttribute('aria-expanded', 'false');
+    });
+    if (!wasOpen) { item.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); }
   }
 
   // ── FAB ──
@@ -1559,6 +1599,10 @@
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); } });
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // ── Footer year ──
+  const yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 </script>
 </body>
 </html>
