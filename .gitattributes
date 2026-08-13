@@ -1,2 +1,5 @@
 # Shell scripts must keep LF endings so they run on the Linux VPS
 *.sh text eol=lf
+
+# nginx snippets are scp'd to the same VPS — keep LF
+*.conf text eol=lf
