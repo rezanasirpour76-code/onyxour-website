@@ -1,5 +1,7 @@
 # Onyxour — Project Guide
 
+> 📗 **Persian business context lives in [`docs/PROJECT-GUIDE-fa.md`](docs/PROJECT-GUIDE-fa.md)** — business goals (اهداف تجاری), competitors and differentiation (رقبا و تمایز), and main page structure (ساختار صفحه اصلی). Those sections have **no English equivalent** here; it is live context, not an outdated copy of this file.
+
 ## Business Overview
 
 **Onyxour** (onyxour.com) is an Iranian VPN service offering fast, secure internet with **fixed dedicated IP**.
