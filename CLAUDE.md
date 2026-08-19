@@ -1,315 +1,263 @@
-# Onyxour — راهنمای کامل پروژه
+# Onyxour — Project Guide
 
-## معرفی کسب‌وکار
+## Business Overview
 
-**Onyxour** یک سرویس VPN ایرانی است که اینترنت آزاد، امن و پرسرعت را با IP ثابت اختصاصی ارائه می‌دهد.
+**Onyxour** (onyxour.com) is an Iranian VPN service offering fast, secure internet with **fixed dedicated IP**.
 
-### ارزش‌های اصلی
-- **IP ثابت اختصاصی** — هر کاربر یک IP ثابت دارد (Fixed Dedicated IP)
-- **سرعت بالا** — پروتکل‌های بهینه، پینگ پایین، مناسب استریم و گیمینگ
-- **اتصال پایدار** — آپتایم بالا، بدون قطعی در ساعات شلوغ
-- **پشتیبانی ۲۴/۷** — پاسخگویی از طریق تلگرام در هر ساعت
-- **آزمایش رایگان ۲۴ ساعته** — بدون نیاز به پرداخت یا کارت اعتباری
-- **پلن خانوادگی** — یک اشتراک برای چند کاربر
+Core value props:
+- Fixed dedicated IP per user
+- Ultra-high speed (optimized protocols, low ping)
+- Stable connection (high uptime, no drops)
+- 24/7 Telegram support
+- 24-hour free trial (no payment/card required)
+- Family plan (shared quota, multiple users)
 
-### مدل قیمت‌گذاری
-قیمت‌ها **بر اساس حجم مصرف** (تومان) تعیین می‌شوند — هر چه بیشتر بخری به‌صرفه‌تر می‌شود.
-
-**پلن شخصی:**
-| حجم | قیمت |
-|-----|------|
-| 10 GB | ۱۸۰,۰۰۰ تومان |
-| 20 GB | ۳۴۸,۰۰۰ تومان |
-| 30 GB | ۵۰۵,۰۰۰ تومان |
-| 40 GB | ۶۵۱,۰۰۰ تومان |
-| 50 GB ⭐ پرفروش | ۷۸۵,۰۰۰ تومان |
-| 100 GB ⭐ بهترین ارزش | ۱,۵۱۴,۰۰۰ تومان |
-| 200 GB | ۲,۹۱۴,۰۰۰ تومان |
-| 1000 GB | ۱۴,۰۰۰,۰۰۰ تومان |
-
-**پلن خانوادگی (۲۰٪ گران‌تر از شخصی):**
-| حجم | قیمت |
-|-----|------|
-| 10 GB | ۲۱۶,۰۰۰ تومان |
-| 20 GB | ۴۱۸,۰۰۰ تومان |
-| 30 GB | ۶۰۶,۰۰۰ تومان |
-| 40 GB | ۷۸۱,۰۰۰ تومان |
-| 50 GB ⭐ پرفروش | ۹۴۲,۰۰۰ تومان |
-| 100 GB ⭐ بهترین ارزش | ۱,۸۱۷,۰۰۰ تومان |
-| 200 GB | ۳,۴۹۷,۰۰۰ تومان |
-| 1000 GB | ۱۶,۸۰۰,۰۰۰ تومان |
+Pricing: volume-based (Tomans), not monthly subscriptions.
+Sales channel: exclusively via Telegram bot `@onyxour_vpn_bot`.
 
 ---
 
-## اطلاعات برند و تماس
+## Tech Stack
 
-| مورد | مقدار |
-|------|-------|
-| نام برند (لاتین) | Onyxour |
-| نام برند (فارسی) | اونیکسور |
-| وب‌سایت | onyxour.com |
-| ربات تلگرام | [@onyxour_vpn_bot](https://t.me/onyxour_vpn_bot) |
-| پشتیبانی مستقیم | [@r_nsr_0](https://t.me/r_nsr_0) |
-| کانال رسمی | [@onyxour_vpn](https://t.me/onyxour_vpn) |
+> ⚠️ Corrected 2026-07-27. The live site is **not** a hand-written vanilla-JS page.
 
-### لوگو
-```html
-<span style="font-family:'Playfair Display',serif; direction:ltr">
-  onyx<span style="color:#F97316">our</span>
-  <span style="font-size:0.6em; color:#787878">VPN</span>
-</span>
-```
-- حرف اول `o` در `our` به رنگ نارنجی `#F97316`
-- فونت لوگو: Playfair Display
-- همیشه LTR و lowercase لاتین
+- **Live site:** a **pre-rendered React SPA** exported from a no-code builder (framework "dc" — `<x-dc>`, `dc-root`, "Unpacking" splash). Single-language Persian, brand «اونیکس‌اور».
+- **Editable source:** the `<x-dc>` document inside `prerender/source-live.html`. There is **no separate React/JSX project** anywhere on the machine. Per `prerender/README.md` this file is not hand-edited — you re-export from the no-code builder and replace it.
+- **Fonts:** the SPA embeds its own fonts in the bundle. (Vazirmatn / Space Grotesk / Playfair Display and the self-hosted `fonts/` setup belonged to the deleted hand-written page.)
+- **Backend:** Node.js (if needed)
+- **Deploy:** `cd prerender && npm run build && npm run verify`, then **SCP `dist/` to VPS1 nginx** `/var/www/html/`. **Not GitHub Pages.** `git push` only versions the repo — it does not change the live site.
 
 ---
 
-## زیرساخت و سرور
+## Key Files
 
-### سرورها
+| File | Purpose |
+|------|---------|
+| `prerender/source-live.html` | ⭐ Real source of the live site (no-code `<x-dc>` export) |
+| `prerender/prerender.mjs` | Snapshots the SPA → `dist/` (this is what ships) |
+| `prerender/dist/` | Build output SCP'd to VPS1 (index.html + robots + sitemap + og + favicons) |
+| `prerender/README.md` | Full build + deploy commands |
+| `CNAME` | Present, but GitHub Pages is **not** the serving source |
+| `CLAUDE.md` | Full project docs (inside repo) |
+
+### 🗑️ Deleted — do not look for these
+`onyxour.html`, `index.html`, `upload.sh`, `fonts/Vazirmatn.woff2` (commits `c957cc4` / `83b0f62`) and `onyxour-vpn.html` (commit `c808297`, 2026-07-27) were all **dead hand-written pages** that were never served. `upload.sh` was worse than dead — it SCP'd the repo's `index.html` over the live SPA snapshot at the same path, silently regressing the site. Recoverable from git history if ever needed.
+
+---
+
+## Infrastructure
+
+### Servers
 
 | | VPS1 — Onyxour | VPS2 — PriceScout |
 |-|----------------|-------------------|
 | **IP** | `204.168.192.40` | `178.105.14.66` |
-| **پلن** | — | CX23 |
-| **موقعیت** | — | Falkenstein, Germany |
-| **کاربرد** | Marzban VPN | PriceScout bot |
+| **Provider** | Hetzner | Hetzner |
+| **Plan** | — | CX23 |
+| **Location** | — | Falkenstein, Germany |
+| **Purpose** | Onyxour VPN (Marzban) | PriceScout bot **+ Onyxour node** (see below) |
+| **SSH key** | `~/.ssh/id_ed25519` | `~/.ssh/id_ed25519` |
+| **SSH password** | stored separately | stored separately |
 
-### VPS1 — Onyxour
-| مورد | مقدار |
-|------|-------|
-| IP سرور | `204.168.192.40` |
-| مسیر فایل وب | `/var/www/html/index.html` |
-| Marzban certs | `/var/lib/marzban/certs/` |
-| SSL hook | `/etc/letsencrypt/renewal-hooks/deploy/marzban-ssl.sh` |
-| روش deploy | SSH با کلید `~/.ssh/id_ed25519` |
+### Onyxour (VPS1)
+- **Web root:** `/var/www/html/` — served by **nginx**, populated by SCP of `prerender/dist/`
+- **Marzban certs:** `/var/lib/marzban/certs/`
+- **SSL hook:** `/etc/letsencrypt/renewal-hooks/deploy/marzban-ssl.sh`
+- **GitHub repo:** `rezanasirpour76-code/onyxour-website` (version control only, not hosting)
+- **Domain:** `onyxour.com` → Cloudflare (Full Strict) → **VPS1 nginx**. A `CNAME` file exists in the repo but GitHub Pages does **not** serve the site.
 
-### VPS2 — PriceScout
-| مورد | مقدار |
-|------|-------|
-| IP سرور | `178.105.14.66` |
-| پلن | CX23 — Hetzner Falkenstein, Germany |
-| کاربرد | ربات تجاری ردیابی قیمت (Trendyol / Amazon) |
+### VPS2 — 178.105.14.66 (Hetzner, fsn1-dc8, instance-id 142530706)
 
-### ⚠️ وضعیت واقعی دیپلوی (تأییدشده ۲۰۲۶-۰۷-۲۶ با curl روی سایت زنده)
+> ⚠️ Corrected 2026-08-20. VPS2 is **not** PriceScout-only. All of the below was
+> verified live on the host, read-only.
 
-**آنچه واقعاً روی `onyxour.com` سرو می‌شود، این `onyxour.html`/`index.html` نیست.**
-سایت زنده یک **SPA (React) پیش‌رندرشده** است — خروجی `prerender/dist/index.html` که از
-`prerender/source-live.html` (یک export تک‌فایلیِ سازندهٔ no-code با فریم‌ورک «dc»:
-`<x-dc>`، `dc-root`، splash «Unpacking») ساخته می‌شود. امضاها در HTML زنده: `React`،
-`__prerender-root`، `__bundler/template`. برند در نسخهٔ زنده «اونیکس‌اور» (فارسی)، تک‌زبانه.
+| Service | Notes |
+|---------|-------|
+| `pricescout.service` | The bot — Trendyol/Amazon price tracking. `/root/pricescout/bot.py` (venv python3) |
+| `pricescout-miniapp.service` | Mini-app |
+| `marzban-node` | Onyxour node (container) |
+| `xray-3xui-mirror.service` | xray, listening on `:2083` and `:62051` |
+| `priceout-floating-ip.service` | PriceScout egress IP — see below |
 
-- **مسیر دیپلوی واقعی:** `cd prerender && npm run build && npm run verify` → SCP کردن `dist/`
-  به `root@204.168.192.40:/var/www/html/` (پشت Cloudflare Full-Strict). جزئیات در
-  [`prerender/README.md`](prerender/README.md) و [`prerender/DEPLOY-NOTES.md`](prerender/DEPLOY-NOTES.md).
-- **سورس قابل‌ویرایش سایت زنده:** سند `<x-dc>` داخل `prerender/source-live.html`. **هیچ پروژهٔ
-  React/JSX جداگانه‌ای روی ماشین نیست** (کل درایو جستجو شد). طبق README، این فایل دستی نوشته
-  نمی‌شود؛ از سازندهٔ no-code دوباره export می‌گیری و جایگزین می‌کنی.
+Active connections to VPS1 `204.168.192.40` are **normal**: VPS2 carries Onyxour
+traffic as well as PriceScout. Do not treat them as an anomaly.
 
-### 🗑️ `onyxour.html`/`index.html`/`upload.sh` حذف شدند (۲۰۲۶-۰۷-۲۶)
-این سه فایل، مسیر دیپلویِ **قدیمی (پیش از SPA)** بودند: یک صفحهٔ فرودِ دست‌نویس (دوزبانه fa/en،
-برند «Onyxour» لاتین) + اسکریپتی که آن را با SCP روی `/var/www/html/index.html` می‌فرستاد — **همان
-مسیری که snapshot زندهٔ SPA آنجاست**، یعنی `upload.sh` سایت زنده را رونویسی و عقب می‌برد. چون هیچ‌کدام
-سرو نمی‌شدند و `upload.sh` یک footgun بود، از مخزن حذف شدند. **تنها مسیر دیپلوی، همان prerender بالاست.**
-(اگر در git history لازم شدند: قبل از commit حذف در تاریخچه هستند.)
+- **GitHub repo:** `rezanasirpour76-code/pricescout`
 
-### دامنه
-| دامنه | هدف |
-|-------|-----|
-| `onyxour.com` | وب‌سایت اصلی — **VPS1 nginx (`/var/www/html/`) از طریق SCP، نه GitHub Pages** (Cloudflare Full-Strict جلوی آن) |
+#### PriceScout floating-IP egress (91.98.101.23)
 
-### GitHub Repository
-- **Repo:** `rezanasirpour76-code/onyxour-website`
-- **Branch اصلی:** `main`
-- **Hosting:** ریشهٔ زنده روی **VPS1 nginx** است (CNAME موجود است ولی GitHub Pages منبعِ سرو نیست)
+> ✅ Verified in the Hetzner console 2026-08-20: Floating IP **"PriceScout-IP"**
+> `91.98.101.23`, project **15002563**, assigned to server **ubuntu-4gb-fsn1-2**
+> (VPS2), Falkenstein. rDNS `static.23.101.98.91.clients.your-server.de`.
+> This assignment is the *entire* reason the SNAT works — it is what Hetzner's
+> anti-spoof checks against. See the silent failure mode below.
 
----
+`priceout-floating-ip.service` → `/usr/local/sbin/priceout-floating-ip.sh`.
+Gives PriceScout a fixed egress IP distinct from the host primary.
 
-## معماری فنی
+- **Mechanism:** `mangle OUTPUT` sets mark `0x64` on packets matching a cgroup2
+  match on `system.slice/pricescout.service`; `nat POSTROUTING` SNATs
+  `mark 0x64 -o eth0` to `91.98.101.23`. PriceScout-scoped by construction —
+  nothing else on the box can reach the rule.
+- Rules are re-added on every pricescout start via `ExecStartPre`, because the
+  cgroup2 match binds to the cgroup **object** at add time and the cgroup is
+  recreated on each restart. That part of the design is sound — leave it alone.
+- **The address is NOT on eth0, and does not need to be.** `ip_up()` does add
+  `91.98.101.23/32`, but the address has been absent since **Jul 31 06:07:55**,
+  wiped when unattended-upgrades restarted `systemd-networkd` and eth0 was
+  rebuilt from netplan (which carries only the DHCPv4 lease + static IPv6).
+  Repeated **Aug 11 06:04:38**. `Type=oneshot` + `RemainAfterExit=yes` means
+  systemd still reports the unit `active (exited)` and never re-runs `ip_up`.
+- PriceScout has worked ~19 days without it. **Egress:** Hetzner anti-spoof
+  accepts a source IP *assigned* to the server, regardless of host config.
+  **Ingress:** `nf_nat` PREROUTING reverses the translation
+  (`dst 91.98.101.23 → 178.105.14.66`) *before* the local-delivery routing
+  decision, so no local address is ever required.
+- **`ss` will mislead you here.** SNAT happens in POSTROUTING, *after* the socket
+  layer, so `ss` reports PriceScout's sockets on `178.105.14.66`. Only the wire
+  packet carries the float. Use `conntrack -L`: the reply tuple shows
+  `dst=91.98.101.23`, and the absence of `[UNREPLIED]` proves return traffic is
+  arriving on it.
 
-### Stack
-| لایه | تکنولوژی |
-|------|-----------|
-| Frontend | HTML، CSS خالص، Vanilla JavaScript |
-| Icons | Lucide Icons (CDN: `unpkg.com/lucide@latest`) |
-| فونت‌ها | Vazirmatn (**self-hosted** — `fonts/Vazirmatn.woff2`)، Space Grotesk، Playfair Display — **بدون Google Fonts** |
-| Backend | Node.js (در صورت نیاز) |
-| Deploy زنده | prerender SPA snapshot → SCP به VPS1 nginx (نگاه کن به بخش «وضعیت واقعی دیپلوی» بالا) |
+##### ⚠️ Counter trap
 
-> **توجه:** جدول Stack بالا (Vanilla JS، بدون build tool، ماژول‌های particle/hamburger/…) صفحهٔ
-> **دست‌نویسِ `onyxour.html` را توصیف می‌کند که مرده است**. سایت زندهٔ واقعی یک SPA React است (فریم‌ورک «dc»).
+`mangle` MARK is **per-packet**. `nat` SNAT is **per-connection** — the nat table
+is conntrack-driven, so POSTROUTING is traversed only for the first packet of a
+flow. Measured 2026-08-19: MARK ≈ **172k packets** vs SNAT ≈ **1,018 connections**.
+They are **not comparable**; reading one for the other manufactures a false
+anomaly. The SNAT rule averages **exactly 60.00 B/pkt** — every match is a TCP SYN.
 
-### فایل‌های کلیدی
-| فایل | هدف |
-|------|-----|
-| `prerender/source-live.html` | ⭐ **سورس واقعی سایت زنده** — export سازندهٔ no-code (سند `<x-dc>`) |
-| `prerender/prerender.mjs` | اسکریپت Route A: snapshot گرفتن از SPA → `dist/` (این چیزی است که دیپلوی می‌شود) |
-| `prerender/dist/` | خروجی بیلد که به VPS1 می‌رود (index.html + robots + sitemap + og + favicons) |
-| `fonts/Vazirmatn.woff2` | فونت self-hosted ورییبل Vazirmatn (~۱۰۸KB، وزن‌های ۱۰۰–۹۰۰) |
-| `CNAME` | فایل دامنه (ریشهٔ زنده روی VPS1 است، نه GitHub Pages) |
+##### ⚠️ Two failure modes with no local symptom
 
-> **حذف‌شده (۲۰۲۶-۰۷-۲۶):** `onyxour.html`، `index.html` و `upload.sh` — صفحهٔ فرودِ دست‌نویسِ قدیمی و
-> اسکریپت دیپلویِ خطرناکش که سرو نمی‌شدند. اگر روزی صفحهٔ فرودِ دست‌نویس را دوباره خواستی، از git history برشان گردان.
+1. If `91.98.101.23` is **unassigned in the Hetzner console**, anti-spoof begins
+   dropping PriceScout's egress silently — no interface change, no log entry, no
+   failed unit. Because the address is on no interface, nothing on the host would
+   reveal it.
+2. **Current state does not predict post-reboot state.** At the next reboot
+   `ip_up` runs again and the `/32` returns. Anything concluded from today's
+   `ip addr` is a snapshot, not the steady state.
 
----
+##### ⚠️ unattended-upgrades reverts manual network config on VPS2
 
-## قراردادهای طراحی
+`apt-daily-upgrade.service` restarting `systemd-networkd` rebuilds eth0 from
+netplan and drops foreign addresses. Observed twice (Jul 31, Aug 11) — a
+**recurring pattern on this host, not a one-off**. Any manual `ip addr add` on
+VPS2 is temporary by default. To persist it, put it in netplan or make the unit
+re-run; do not assume a one-shot `ip addr add` survives.
 
-### زبان و جهت
-- تمام متن‌های رو‌به‌رو با کاربر باید **فارسی** باشند
-- جهت layout: **RTL** — همیشه `dir="rtl"` روی `<html>` و `direction: rtl` در CSS
-- اعداد، قیمت‌ها و رشته‌های فنی (مثل AES-256، WireGuard): LTR با `direction: ltr`
+#### ⚠️ Hetzner Cloud Firewall on VPS2 — read before attaching one
 
-### فونت
-```css
-font-family: 'Vazirmatn', 'Tahoma', system-ui, sans-serif; /* متن فارسی */
-font-family: 'Space Grotesk', system-ui, sans-serif;        /* اعداد و لاتین */
-font-family: 'Playfair Display', Georgia, serif;            /* لوگو */
-```
+As of 2026-08-20, project **15002563** contains a firewall named `firewall-1`
+with **3 rules**, "Applied to: 0 Servers", status **"Not applied"**, created
+about one month ago. **VPS2 therefore has NO cloud firewall protection.** A
+firewall object exists — it is simply not attached. (For contrast, project
+**14376238** has its own `firewall-1` with **19 rules**, fully applied to VPS1.)
 
-> **فونت self-hosted:** Vazirmatn به‌صورت **فایل محلی** سرو می‌شود، نه Google Fonts. یک فایل ورییبل `fonts/Vazirmatn.woff2` (وزن‌های ۱۰۰–۹۰۰) با `@font-face`:
-> ```css
-> @font-face {
->   font-family: 'Vazirmatn';
->   src: url('fonts/Vazirmatn.woff2') format('woff2');
->   font-weight: 100 900;
->   font-display: swap;
-> }
-> ```
-> در `<head>` هم `<link rel="preload" href="fonts/Vazirmatn.woff2" as="font" type="font/woff2" crossorigin>` گذاشته شده. **هیچ وابستگی به CDN خارجی برای فونت وجود ندارد** — مقاوم در برابر فیلترینگ. (توجه: این بلوکِ فونت مربوط به صفحهٔ دست‌نویسِ حذف‌شده است؛ سایت زندهٔ SPA فونت‌های خودش را در bundler دارد.)
+**Those 3 rules have NOT been reviewed. Do not attach `firewall-1` as-is** — its
+ruleset must first be checked against the mandatory inbound list below, or SSH
+and marzban-node could both break.
 
-### پالت رنگی (تم تاریک — فقط dark theme)
-```css
-:root {
-  --bg:           #0a0a0a;   /* پس‌زمینه اصلی */
-  --bg2:          #111111;   /* پس‌زمینه ثانوی */
-  --surface:      #181818;   /* کارت‌ها و کامپوننت‌ها */
-  --surface2:     #1f1f1f;   /* لایه دوم سطح */
-  --border:       #2a2a2a;   /* خطوط جداکننده */
-  --border2:      #333333;   /* خطوط پررنگ‌تر */
-  --orange:       #F97316;   /* رنگ اصلی برند */
-  --orange2:      #FB923C;   /* hover state نارنجی */
-  --orange3:      #FED7AA;   /* نارنجی روشن */
-  --orange-glow:  rgba(255,107,0,0.18);
-  --orange-glow2: rgba(255,107,0,0.08);
-  --text:         #f2f2f2;   /* متن اصلی */
-  --text2:        #c0c0c0;   /* متن ثانوی */
-  --muted:        #787878;   /* متن کم‌رنگ */
-  --green:        #22c55e;   /* موفقیت / تأیید */
-  --radius:       12px;
-}
-```
+**Outbound: leave completely EMPTY.**
+With zero outbound rules Hetzner permits all egress. Add a *single* outbound
+rule and everything unlisted is dropped — and PriceScout's destinations
+(Telegram + scrape targets) are not enumerable. There is no safe outbound
+ruleset here. Leave it empty.
 
-> **توجه:** CLAUDE.md اصلی (خارج از ریپو) از رنگ بنفش `#6c63ff` استفاده می‌کند — اما رنگ واقعی پروژه **نارنجی** `#F97316` است. همیشه از پالت بالا استفاده کنید.
+**Inbound: these rules are mandatory.**
 
-### CSS
-- فقط CSS خالص — بدون فریمورک خارجی
-- استفاده از CSS custom properties برای همه رنگ‌ها
-- موبایل-فرست، مقیاس‌پذیر با `clamp()` برای اندازه فونت
-- Breakpointها: `768px` (موبایل)، `1100px` (تبلت)، `600px` (موبایل کوچک)
+| Port | Source | Why |
+|------|--------|-----|
+| TCP `62050`, `62051` | `204.168.192.40/32` | marzban-node ← VPS1. **Omit these and the node drops — 84 paying customers lose service.** |
+| TCP `22` | Any IPv4 (`0.0.0.0/0`) | Admin SSH. Source IP changes — do **not** lock this to a single address. |
 
-### JavaScript
-- Vanilla JS — بدون فریمورک
-- بدون build tool
-- ماژول‌های اصلی داخل صفحه:
-  - **Particle Network** — canvas animation پس‌زمینه (80 ذره دسکتاپ / 35 موبایل)
-  - **Hamburger Menu** — منوی موبایل با آیکن menu/x
-  - **Scroll Reveal** — IntersectionObserver برای fade-in کارت‌ها
-  - **NAV glass effect** — تاریک شدن navbar هنگام اسکرول
-  - **FAB** — دکمه شناور که بعد از hero ظاهر می‌شود
-  - **Plan Toggle** — سوئیچ بین پلن شخصی و خانوادگی
+**Inbound is otherwise fine, but verify statefulness empirically.**
+Hetzner's official docs do not state whether the firewall is stateful, and say
+nothing about Floating IP return paths. PriceScout's return traffic arrives as
+`src=149.154.166.110:443 → dst=91.98.101.23`, which matches no inbound allow
+rule. It survives only if state tracking holds *and* associates the flow with
+the float. Neither is documented, so measure it rather than assume it.
 
----
+Immediately after attaching:
 
-## ساختار صفحه اصلی
-
-```
-NAV (sticky, glass blur on scroll)
-  └── لوگو | لینک‌ها | دکمه CTA | hamburger (موبایل)
-
-HERO
-  └── particle canvas (fixed, z-index: 0)
-  └── shield emblem (SVG، شناور)
-  └── pulse rings (3 حلقه)
-  └── trial badge | h1 | subtitle | CTA buttons | trust row
-
-STATS BAR (4 ستون)
-  └── 24h Free Trial | IP ثابت | 24/7 | 🔒
-
-FEATURES (6 کارت)
-  └── IP ثابت | سرعت | پایداری | پشتیبانی | خانوادگی | حریم خصوصی
-
-FREE TRIAL SECTION
-  └── ۳ مرحله + دکمه تلگرام
-
-PRICING
-  └── toggle (شخصی/خانوادگی) + 8 کارت قیمت
-
-CONTACT
-  └── 3 کارت: ربات | پشتیبانی مستقیم | کانال
-
-CTA BANNER
-
-FOOTER
-  └── لوگو | copyright | لینک‌ها
-
-FAB (fixed, نارنجی، بعد از hero ظاهر می‌شود)
-```
-
----
-
-## اهداف تجاری و توسعه
-
-### اولویت‌های فعلی
-1. **ربات تلگرام** — همه فروش و آزمایش رایگان از طریق `@onyxour_vpn_bot` انجام می‌شود
-2. **سادگی** — صفحه یک‌فایلی، بدون پیچیدگی، آماده deploy
-3. **تبدیل (Conversion)** — هر بخش صفحه به سمت کلیک روی ربات هدایت می‌کند
-
-### کانال‌های تماس با کاربر
-| کانال | هدف |
-|-------|-----|
-| `@onyxour_vpn_bot` | خرید، آزمایش رایگان، مدیریت حساب |
-| `@r_nsr_0` | پشتیبانی فنی مستقیم |
-| `@onyxour_vpn` | اطلاعیه، تخفیف، اخبار |
-
-### رقبا و تمایز
-- تمرکز روی **IP ثابت** — اکثر VPNهای ایرانی IP ثابت ندارند
-- قیمت‌گذاری **بر اساس حجم** — نه اشتراک ماهانه ثابت
-- **آزمایش رایگان** بدون نیاز به اطلاعات پرداخت
-
----
-
-## نکات مهم برای Claude
-
-### چه چیزی باید بسازم/ویرایش کنم؟
-- هرگاه متن UI اضافه می‌شود → **فارسی** باشد
-- هرگاه رنگ جدید نیاز است → از پالت نارنجی بالا استفاده شود
-- هرگاه لینک به ربات نیاز است → `https://t.me/onyxour_vpn_bot`
-- ⚠️ **سایت زنده از `prerender/source-live.html` (سازندهٔ no-code) می‌آید، نه فایل‌های HTML ریشه**
-  (که حذف شده‌اند). بخش «وضعیت واقعی دیپلوی» بالا را ببین.
-
-### چه چیزی نباید انجام شود؟
-- تغییر تم به روشن (light mode)
-- استفاده از فریمورک CSS خارجی
-- اضافه کردن متن انگلیسی به عنوان متن اصلی UI
-- استفاده از رنگ بنفش `#6c63ff` (رنگ قدیمی — حذف شده)
-
-### Deploy کردن
-
-**سایت زنده (SPA snapshot) — روش درست:**
 ```bash
-cd prerender
-npm run build          # source-live.html → dist/{index.html,robots.txt,sitemap.xml,og-image.png,favicon.*}
-npm run verify         # چک static + JS-mount + favicon
-# سپس dist/ را با SCP به VPS1 بفرست (دستور کامل در prerender/README.md)
+conntrack -L | grep 149.154.166.110
 ```
 
-**توجه:** `upload.sh` (اسکریپت دیپلوی قدیمی) حذف شده — snapshot زنده را با صفحهٔ دست‌نویس رونویسی می‌کرد. دیپلوی فقط از مسیر SCP کردن `dist/` بالا.
+The long-poll flow must still hold `ESTABLISHED` + `[ASSURED]` for 60+ seconds.
+If statefulness does not hold, that flow dies immediately and visibly — this
+failure is loud, not silent. **Detaching the firewall is a clean rollback.**
 
-**push به GitHub (فقط نسخهٔ کنترلِ مخزن — سایت زنده را تغییر نمی‌دهد، چون Hosting روی VPS1 است):**
-```bash
-git add -A
-git commit -m "..."
-git push origin main
+---
+
+## Project Conventions
+
+### Language & Direction
+- All user-facing text must be in **Persian (Farsi)**
+- Layout direction: **RTL** — always `dir="rtl"` on `<html>` and `direction: rtl` in CSS
+- Numbers, prices, technical strings: LTR with `direction: ltr`
+- Font stack: `'Vazirmatn', 'Tahoma', system-ui, sans-serif`
+
+### Design System (dark theme only)
+```css
+--bg:      #0a0a0a   /* main background */
+--surface: #181818   /* cards */
+--border:  #2a2a2a
+--orange:  #F97316   /* PRIMARY brand color */
+--orange2: #FB923C   /* hover */
+--orange3: #FED7AA   /* light orange */
+--text:    #f2f2f2
+--text2:   #c0c0c0
+--muted:   #787878
 ```
+
+> The purple `#6c63ff` color is **outdated** — do not use. Brand color is orange `#F97316`.
+
+### CSS Rules
+- Plain CSS only — no external frameworks
+- CSS custom properties for all colors
+- Mobile-first, `clamp()` for type scale
+- Breakpoints: `600px`, `768px`, `1100px`
+
+> These CSS conventions + the palette above are the **brand truth** and apply to anything new. They are not a description of the live SPA, whose styles come out of the no-code builder.
+
+### JavaScript Rules
+- ~~Vanilla JS only, no build tools~~ — described the deleted hand-written page.
+- The live site is React (transpiled in-browser by the "dc" runtime). Its modules — particle canvas, hamburger menu, scroll reveal, NAV glass, FAB, plan toggle — belonged to that dead page and are **not** what runs in production.
+
+---
+
+## Telegram Contacts
+
+| Channel | Purpose |
+|---------|---------|
+| `@onyxour_vpn_bot` | Purchase, free trial, account management |
+| `@r_nsr_0` | Direct technical support |
+| `@onyxour_vpn` | Announcements, discounts, news |
+
+---
+
+## Logo
+
+```html
+onyx<span style="color:#F97316">our</span> <small style="color:#787878">VPN</small>
+```
+Font: Playfair Display — always LTR, lowercase Latin.
+
+---
+
+## What NOT to do
+
+- Do not switch to light theme
+- Do not use CSS frameworks
+- Do not use purple `#6c63ff` (old color)
+- Do not write UI text in English as primary content
+- Do not run `bash upload.sh` — it is deleted, and restoring it from history would overwrite the live SPA snapshot
+- Do not assume `git push` deploys the site — it does not. Deploy = SCP `prerender/dist/` to VPS1.
+- Do not restore `onyxour.html` / `index.html` / `onyxour-vpn.html` from history expecting them to be live — they never were
+- Do not describe VPS2 as PriceScout-only — it also runs `marzban-node` and `xray-3xui-mirror.service`
+- Do not compare VPS2's `mangle` MARK counter against its `nat` SNAT counter — per-packet vs per-connection, not the same unit
+- Do not "fix" the missing `91.98.101.23` on VPS2's eth0 assuming egress is broken — it isn't. Check `conntrack -L` first
+- Do not assume a manual `ip addr add` persists on VPS2 — unattended-upgrades wipes it
+- Do not add **any** outbound rule to a VPS2 Hetzner Cloud Firewall — one rule drops everything unlisted, and PriceScout's destinations are not enumerable
+- Do not attach a VPS2 firewall without allowing `204.168.192.40/32` inbound on TCP 62050–62051 — marzban-node drops and 84 paying customers lose service
+- Do not attach project 15002563's `firewall-1` as-is — its 3 rules are unreviewed and could break SSH and marzban-node
